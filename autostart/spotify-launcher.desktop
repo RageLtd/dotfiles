@@ -1,0 +1,11 @@
+[Desktop Entry]
+Categories=Audio;Music;Player;AudioVideo;
+Exec=spotify-launcher %U
+GenericName=Music Player
+Icon=spotify-launcher
+MimeType=x-scheme-handler/spotify;
+Name=Spotify (Launcher)
+StartupWMClass=spotify
+Terminal=false
+TryExec=spotify-launcher
+Type=Application

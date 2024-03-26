@@ -1,0 +1,30 @@
+# Ignore everything
+**/*
+
+# But not these directories...
+!autostart
+!autostart/*
+!gtk-*
+!gtk-*/*
+!OpenRGB
+!OpenRGB/*
+!paru
+!paru/*
+!xsettingsd
+!xsettingsd/*
+
+# And not these files
+!.gitignore
+!dolphinrc
+!gtkrc
+!gtkrc-2.0
+!kcminputrc
+!kdeglobals
+!kglobalshortcutsrc
+!khotkeysrc
+!krunnerrc
+!plasma-org.kde.plasma.desktop-appletsrc
+!plasmanotifyrc
+!plasmarc
+1plasmashellrc
+!Trolltech.conf
