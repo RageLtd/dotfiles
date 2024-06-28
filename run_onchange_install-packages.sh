@@ -4,6 +4,8 @@ set -eo pipefail
 # If we're on arch, and don't already have it, install paru
 
 if [ -f /etc/arch-release ] && ! command -v paru &> /dev/null; then
+    sudo pacman -S rustup
+    rustup install stable
     sudo pacman -S --needed base-devel
     git clone https://aur.archlinux.org/paru.git
     cd paru
