@@ -1,0 +1,8 @@
+[Desktop Entry]
+Comment=Manage Podman and other container engines from a single UI and tray
+Exec=/usr/bin/podman-desktop
+Icon=/usr/share/podman-desktop-bin/icon.svg
+Name=Podman Desktop
+Path=/opt/podman-desktop-bin
+Type=Application
+Version=1.0
