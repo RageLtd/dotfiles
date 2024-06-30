@@ -21,7 +21,7 @@ if [ -f /etc/debian_version ]; then
 elif [ -f /etc/redhat-release ]; then
     sudo yum install $(cat .packages)
 elif [ -f /etc/arch-release ]; then
-    sudo paru -S $(cat .packages) --needed
+    paru -S $(cat .packages) --needed
 elif [ -f /etc/gentoo-release ]; then
     sudo emerge $(cat .packages)
 else
