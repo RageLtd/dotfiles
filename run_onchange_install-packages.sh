@@ -17,13 +17,13 @@ fi
 # Figure out which package manager we're using
 # and install packages from dot_packages
 if [ -f /etc/debian_version ]; then
-    sudo apt-get install $(cat dot_packages)
+    sudo apt-get install $(cat .packages)
 elif [ -f /etc/redhat-release ]; then
-    sudo yum install $(cat dot_packages)
+    sudo yum install $(cat .packages)
 elif [ -f /etc/arch-release ]; then
-    sudo paru -S $(cat dot_packages) --needed
+    sudo paru -S $(cat .packages) --needed
 elif [ -f /etc/gentoo-release ]; then
-    sudo emerge $(cat dot_packages)
+    sudo emerge $(cat .packages)
 else
     echo "Unknown distribution"
     exit 1
