@@ -133,5 +133,15 @@ alias jctl="journalctl -p 3 -xb"
 alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
 
 source /opt/asdf-vm/asdf.fish
+# Load asdf plugins if they exist
+if test -d ~/.asdf/plugins
+    for plugin in ~/.asdf/plugins/*
+        if test -d $plugin
+            if test -f $plugin/*.fish
+                source $plugin/*.fish
+            end
+        end
+    end
+end
 
 starship init fish | source
