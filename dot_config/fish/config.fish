@@ -137,8 +137,11 @@ source /opt/asdf-vm/asdf.fish
 if test -d ~/.asdf/plugins
     for plugin in ~/.asdf/plugins/*
         if test -d $plugin
-            if test -f $plugin/*.fish
-                source $plugin/*.fish
+            if test -f $plugin/set-dotnet-env.fish
+                source $plugin/set-dotnet-env.fish
+            end
+            if test -f $plugin/set-dotnet-home.fish
+                source $plugin/set-dotnet-home.fish
             end
         end
     end
