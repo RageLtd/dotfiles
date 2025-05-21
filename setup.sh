@@ -90,5 +90,5 @@ done
 
 if $IS_HOST; then
     op signin
-    op inject -f -i .config/zed/settings.json.sample -o .config/zed/settings.json
+    op inject -f -i .continue/config.yaml.sample -o .continue/config.yaml
 fi
