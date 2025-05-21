@@ -15,10 +15,9 @@ command_exists() {
 install_packages() {
     packages="git starship zsh micro"
 
-    if command_exists apt; then
-        echo "Detected Debian/Ubuntu-based system. Using APT."
-        sudo apt update && sudo apt install -y $packages
-        curl -sS https://starship.rs/install.sh | sh
+    if command_exists apk; then
+        echo "Detected Alpine based system. Using APK."
+        sudo apk update && sudo apk add -y $packages
 
     elif command_exists dnf; then
         echo "Detected Fedora-based system. Using DNF."
