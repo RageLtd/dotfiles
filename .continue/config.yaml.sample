@@ -1,0 +1,80 @@
+name: Continue Config
+version: 0.0.1
+
+models:
+  - name: OpenAI o4 mini
+    provider: openai
+    model: ''
+    apiKey: {{ op://Personal/OPENAI_KEY/credential }}
+
+  - uses: morphllm/morph-v0
+    with:
+      MORPH_API_KEY: {{ op://Personal/MORPH_KEY/credential }}
+
+  - name: My Voyage Reranker
+    provider: voyage
+    apiKey: {{ op://Personal/VOYAGE_KEY/credential }}
+    model: rerank-2
+    roles:
+      - rerank
+
+  - name: Qwen3 - Unsloth
+    model: hf.co/unsloth/Qwen3-8B-GGUF:UD-Q4_K_XL
+    provider: ollama
+    apiBase: http://192.168.1.15:11434
+    defaultCompletionOptions:
+      contextLength: 32000
+      topP: 0.95
+      topK: 20
+    roles:
+      - chat
+      - edit
+      - apply
+
+  - name: Qwen 1.5b Autocomplete Model
+    provider: ollama
+    model: hf.co/unsloth/Qwen2.5-Coder-1.5B-Instruct-128K-GGUF:Q4_K_M
+    roles:
+      - autocomplete
+
+  - name: Nomic Embed
+    model: nomic-embed-text:latest
+    provider: ollama
+    apiBase: http://192.168.1.15:11434
+    roles:
+     - embed
+
+  - name: MXBai Embed
+    model: mxbai-embed-large:335m
+    provider: ollama
+    apiBase: http://192.168.1.15:11434
+    roles:
+      - embed
+
+  - name: MXBai Rerank Large
+    model: hf.co/mradermacher/mxbai-rerank-large-v2-i1-GGUF:Q4_K_M
+    provider: ollama
+    apiBase: http://192.168.1.15:11434
+    roles:
+      - rerank
+
+context:
+  - uses: continuedev/code-context
+    with: {}
+  - uses: continuedev/docs-context
+    with: {}
+  - uses: continuedev/diff-context
+    with: {}
+  - uses: continuedev/terminal-context
+    with: {}
+  - uses: continuedev/problems-context
+    with: {}
+  - uses: continuedev/folder-context
+    with: {}
+  - uses: continuedev/codebase-context
+    with: {}
+
+prompts:
+  - name: Geneerate Tests
+    description: Generate unit tests for open file
+    prompt: Please write unit tests to cover all user interaction for the open file using `vitest`'s apis including the `vi` object for mocking and hoisting, or `vitest`'s expect, spyOn if necessary. You can find the `vitest` api docs at https://vitest.dev/api/ /nothink

@@ -1,0 +1,12 @@
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+[user]
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFYYXTvcmOhotsCanioNrhSpXztzF3Bu9T+f6G1d8IKR
+	name = RageLtd
+	email = rageltd@pm.me
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
