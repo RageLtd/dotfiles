@@ -19,8 +19,6 @@ znap source zsh-users/zsh-autosuggestions
 
 znap eval starship 'starship init zsh --print-full-init'
 
-set -a; source .env; set +a
-
 # proto
 export PROTO_HOME="$HOME/.proto";
 export PATH="$PROTO_HOME/shims:$PROTO_HOME/bin:$PATH";
