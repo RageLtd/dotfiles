@@ -17,7 +17,7 @@ install_packages() {
 
     if command_exists apk; then
         echo "Detected Alpine based system. Using APK."
-        sudo apk update && sudo apk add -y $packages
+        sudo apk update && sudo apk add --no-cache $packages
 
     elif command_exists dnf; then
         echo "Detected Fedora-based system. Using DNF."
