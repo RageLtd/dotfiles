@@ -71,7 +71,7 @@ install_packages
 source_dir="$HOME/dotfiles"
 target_dir="$HOME"
 
-find "$source_dir" -print0 | while IFS= read -r '' path; do
+find "$source_dir" -print0 | while IFS= read -r path; do
     # Get the path relative to the source directory
     relative_path=${path#$source_dir/}
 
