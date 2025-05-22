@@ -36,7 +36,16 @@ install_packages() {
     if command_exists apk; then
         echo "Detected Alpine based system. Using APK."
         $sudo_cmd apk update && $sudo_cmd apk add --no-cache $packages
+    elif command_exists apt; then
+        echo "Detected Debian-based system. Using APT."
+        $sudo_cmd apt update && $sudo_cmd apt install -y $packages
 
+        if ! command_exists op && $IS_HOST; then
+            curl -f https://zed.dev/install.sh | sh
+            $sudo_cmd apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0xFBB75451A3A4D1D8
+            $sudo_cmd sh -c 'echo "deb [arch=amd64] https://downloads.1password.com/linux/debian/ stable main" > /etc/apt/sources.list.d/1password.list'
+            $sudo_cmd apt update && $sudo_cmd apt install -y 1password 1password-cli
+        fi
     elif command_exists dnf; then
         echo "Detected Fedora-based system. Using DNF."
         $sudo_cmd dnf install -y $packages
