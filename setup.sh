@@ -40,7 +40,7 @@ install_packages() {
     elif command_exists apt; then
         echo "Detected Debian-based system. Using APT."
         $sudo_cmd apt update && $sudo_cmd apt install -y $debian_packages
-        curl -sS https://starship.rs/install.sh | sh - -y
+        curl -sS https://starship.rs/install.sh | sh -s -- -y
 
         if ! command_exists op && $IS_HOST; then
             curl -f https://zed.dev/install.sh | sh
