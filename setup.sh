@@ -11,32 +11,49 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Determine if sudo is needed and set sudo_cmd accordingly
+sudo_cmd=""
+if [ "$(id -u)" -ne 0 ]; then # If not root
+    # If 'brew' is not the package manager being used by this script for these operations,
+    # and we are not root, then 'sudo' is required.
+    if ! command_exists brew; then
+        if command_exists sudo; then
+            sudo_cmd="sudo"
+        else
+            echo "Error: This script is not running as root, 'sudo' command is not found, and 'brew' is not available for package management as per this script's logic."
+            echo "Please run as root or ensure 'sudo' is installed and in PATH."
+            exit 1
+        fi
+    # If 'brew' exists, sudo_cmd remains empty, as 'brew' commands in this script are not prefixed with sudo.
+    fi
+fi
+
 # Function to install packages
 install_packages() {
     packages="git starship zsh micro"
 
     if command_exists apk; then
         echo "Detected Alpine based system. Using APK."
-        sudo apk update && sudo apk add --no-cache $packages
+        $sudo_cmd apk update && $sudo_cmd apk add --no-cache $packages
 
     elif command_exists dnf; then
         echo "Detected Fedora-based system. Using DNF."
-        sudo dnf install -y $limited
+        $sudo_cmd dnf install -y $packages
 
-        if ! command_exists op && IS_HOST; then
+        if ! command_exists op && $IS_HOST; then
             curl -f https://zed.dev/install.sh | sh
-            sudo rpm --import https://downloads.1password.com/linux/keys/1password.asc
-            sudo sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
-            sudo dnf check-update -y 1password 1password-cli && sudo dnf install 1password 1password-cli
+            $sudo_cmd rpm --import https://downloads.1password.com/linux/keys/1password.asc
+            $sudo_cmd sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
+            $sudo_cmd dnf check-update -y 1password 1password-cli && $sudo_cmd dnf install 1password 1password-cli
         fi
 
     elif command_exists pacman; then
         echo "Detected Arch Linux-based system. Installing and using Paru."
-        sudo pacman -Syu --noconfirm --needed $packages base-devel
+        $sudo_cmd pacman -Syu --noconfirm --needed $packages base-devel
         git clone https://aur.archlinux.org/paru-bin.git && cd paru-bin && makepkg -si && cd .. && rm -rf paru-bin
 
-        if ! command_exists op && IS_HOST; then
-            sudo paru -S --noconfirm --needed 1password 1password-cli zed
+        if ! command_exists op && $IS_HOST; then
+            $sudo_cmd paru -S --noconfirm --needed 1password 1password-cli zed
         fi
 
     elif command_exists brew; then
@@ -47,13 +64,6 @@ install_packages() {
         exit 1
     fi
 }
-
-# Check for root privileges if necessary
-if [ "$(id -u)" -ne 0 ] && ! command_exists brew; then
-    echo "This script requires root privileges to install packages."
-    echo "Please run it as root or with sudo."
-    exit 1
-fi
 
 # Install packages
 install_packages
