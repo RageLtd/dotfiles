@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 IS_HOST=false
 # if host is passed in as an argument, skip some tools
@@ -71,45 +72,82 @@ install_packages
 source_dir="$HOME/dotfiles"
 target_dir="$HOME"
 
-find "$source_dir" -print0 | while IFS= read -r path; do
-    # Get the path relative to the source directory
-    relative_path=${path#$source_dir/}
+# Export variables to be available in the subshell spawned by find -exec
+export source_dir
+export target_dir
 
-    # Construct the full destination path
-    destination_path="$target_dir/$relative_path"
+# Use find -exec with an inline sh script for POSIX compatibility.
+# The inline script handles symlink creation and realpath fallback.
+find "$source_dir" -exec sh -c '
+    # Loop through each path found by find.
+    # $source_dir and $target_dir are inherited from the environment.
+    for path_item do
+        # Get the path relative to the source directory.
+        relative_path=${path_item#"$source_dir"/}
 
-    if [ -d "$path" ]; then
-        # If it's a directory, create the corresponding directory in the target
-        mkdir -p "$destination_path"
-    elif [ -f "$path" ]; then
-        # If the file exists already, remove it
-        if [ -f "$destination_path" ]; then
-            rm "$destination_path"
-        fi
-        # Create a symlink to the original file
-        # Ensure the parent directory exists before creating the symlink
-        mkdir -p "$(dirname "$destination_path")"
+        # Construct the full destination path.
+        destination_path="$target_dir/$relative_path"
 
-        abs_target_path=""
-        if command -v realpath >/dev/null 2>&1; then
-            abs_target_path=$(realpath "$path")
-        else
-            # Basic fallback: make path absolute if not already
-            # This doesn't resolve '..' or symlinks within the path itself like realpath does
-            if [ -d "$path" ]; then # For directories
-                abs_target_path=$(cd "$path" && pwd)
-            elif [ -f "$path" ]; then # For files
-                abs_target_path_dir=$(cd "$(dirname "$path")" && pwd)
-                abs_target_path="$abs_target_path_dir/$(basename "$path")"
-            else
-                # Handle other cases or error
-                echo "Warning: Cannot determine absolute path for $path without realpath" >&2
-                abs_target_path="$path" # Fallback to original path
+        if [ -d "$path_item" ]; then
+            # If it is a directory, create the corresponding directory in the target.
+            mkdir -p "$destination_path"
+        elif [ -f "$path_item" ]; then
+            # If the file exists already at the destination, remove it.
+            if [ -f "$destination_path" ]; then
+                rm "$destination_path"
             fi
+            # Ensure the parent directory exists before creating the symlink.
+            mkdir -p "$(dirname "$destination_path")"
+
+            # Resolve the absolute path for the symlink target.
+            abs_target_path=""
+            if command -v realpath >/dev/null 2>&1; then
+                abs_target_path=$(realpath "$path_item")
+            else
+                # Basic POSIX fallback for realpath.
+                _fallback_path="$path_item" # Current item from find
+                _resolved_abs_path=""
+
+                if [ -d "$_fallback_path" ]; then
+                    # For directories, cd into it and get pwd.
+                    if _cd_output=$(cd "$_fallback_path" 2>/dev/null && pwd); then
+                        _resolved_abs_path="$_cd_output"
+                    fi
+                else
+                    # For files, cd into their directory, then append basename.
+                    _fallback_dir="$(dirname "$_fallback_path")"
+                    _fallback_base="$(basename "$_fallback_path")"
+                    
+                    # Default dirname to "." if dirname returns empty (e.g. for a file in current dir like "foo")
+                    if [ -z "$_fallback_dir" ] && [ "$_fallback_path" = "$_fallback_base" ]; then
+                        _fallback_dir="."
+                    # Handle root files like "/file", dirname is "/"
+                    elif [ -z "$_fallback_dir" ] && [ "${_fallback_path%%/*}" = "" ]; then
+                         _fallback_dir="/"
+                    fi
+                    
+                    if _cd_output=$(cd "$_fallback_dir" 2>/dev/null && pwd); then
+                        # If cd output is root, avoid double slash
+                        if [ "$_cd_output" = "/" ]; then
+                            _resolved_abs_path="/$_fallback_base"
+                        else
+                            _resolved_abs_path="$_cd_output/$_fallback_base"
+                        fi
+                    fi
+                fi
+                
+                # Use resolved path if successful, otherwise fallback to original path with a warning.
+                if [ -n "$_resolved_abs_path" ]; then
+                    abs_target_path="$_resolved_abs_path"
+                else
+                    echo "Warning: realpath fallback failed for $_fallback_path. Using original path." >&2
+                    abs_target_path="$_fallback_path"
+                fi
+            fi
+            ln -s "$abs_target_path" "$destination_path"
         fi
-        ln -s "$abs_target_path" "$destination_path"
-    fi
-done
+    done
+' sh {} +
 
 if $IS_HOST; then
     op signin
