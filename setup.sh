@@ -89,7 +89,25 @@ find "$source_dir" -print0 | while IFS= read -r path; do
         # Create a symlink to the original file
         # Ensure the parent directory exists before creating the symlink
         mkdir -p "$(dirname "$destination_path")"
-        ln -s "$(realpath "$path")" "$destination_path"
+
+        abs_target_path=""
+        if command -v realpath >/dev/null 2>&1; then
+            abs_target_path=$(realpath "$path")
+        else
+            # Basic fallback: make path absolute if not already
+            # This doesn't resolve '..' or symlinks within the path itself like realpath does
+            if [ -d "$path" ]; then # For directories
+                abs_target_path=$(cd "$path" && pwd)
+            elif [ -f "$path" ]; then # For files
+                abs_target_path_dir=$(cd "$(dirname "$path")" && pwd)
+                abs_target_path="$abs_target_path_dir/$(basename "$path")"
+            else
+                # Handle other cases or error
+                echo "Warning: Cannot determine absolute path for $path without realpath" >&2
+                abs_target_path="$path" # Fallback to original path
+            fi
+        fi
+        ln -s "$abs_target_path" "$destination_path"
     fi
 done
 
