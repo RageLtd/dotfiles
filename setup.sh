@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -e
 
 IS_HOST=false
 # if host is passed in as an argument, skip some tools
