@@ -68,10 +68,6 @@ install_packages() {
 # Install packages
 install_packages
 
-# Remove Readme and Licence
-rm README.md
-rm LICENCE
-
 source_dir="$HOME/dotfiles"
 target_dir="$HOME"
 
