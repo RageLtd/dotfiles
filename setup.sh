@@ -31,14 +31,16 @@ fi
 
 # Function to install packages
 install_packages() {
-    packages="git starship zsh micro"
+    packages="git zsh starship micro"
+    debian_packages="git zsh micro"
 
     if command_exists apk; then
         echo "Detected Alpine based system. Using APK."
         $sudo_cmd apk update && $sudo_cmd apk add --no-cache $packages
     elif command_exists apt; then
         echo "Detected Debian-based system. Using APT."
-        $sudo_cmd apt update && $sudo_cmd apt install -y $packages
+        $sudo_cmd apt update && $sudo_cmd apt install -y $debian_packages
+        curl -sS https://starship.rs/install.sh | sh
 
         if ! command_exists op && $IS_HOST; then
             curl -f https://zed.dev/install.sh | sh
