@@ -16,6 +16,7 @@ znap source mattmc3/zephyr plugins/{color,completion,directory,editor,environmen
 znap source zdharma-continuum/fast-syntax-highlighting
 znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
+znap source ptavares/zsh-direnv
 
 znap eval starship 'starship init zsh --print-full-init'
 
