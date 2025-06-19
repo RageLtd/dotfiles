@@ -29,6 +29,7 @@ if [ "$(id -u)" -ne 0 ]; then # If not root
     fi
 fi
 
+
 # Function to install packages
 install_packages() {
     packages="git zsh starship micro"
@@ -64,6 +65,9 @@ install_packages() {
         $sudo_cmd pacman -Syu --noconfirm --needed $packages base-devel
         git clone https://aur.archlinux.org/paru-bin.git && cd paru-bin && makepkg -si && cd .. && rm -rf paru-bin
 
+        echo "Installing ML4W dotfiles"
+        bash -c "$(curl -s https://raw.githubusercontent.com/mylinuxforwork/dotfiles/main/setup-arch.sh)"
+
         if ! command_exists op && $IS_HOST; then
             $sudo_cmd paru -S --noconfirm --needed 1password 1password-cli zed
         fi
@@ -79,6 +83,9 @@ install_packages() {
 
 # Install packages
 install_packages
+
+# clone ml4w and install
+if 
 
 source_dir="$HOME/dotfiles"
 target_dir="$HOME"

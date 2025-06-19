@@ -20,6 +20,8 @@ znap source ptavares/zsh-direnv
 
 znap eval starship 'starship init zsh --print-full-init'
 
+export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
+
 # proto
 export PROTO_HOME="$HOME/.proto";
 export PATH="$PROTO_HOME/shims:$PROTO_HOME/bin:$PATH";
