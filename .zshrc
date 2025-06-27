@@ -16,12 +16,9 @@ znap source mattmc3/zephyr plugins/{color,completion,directory,editor,environmen
 znap source zdharma-continuum/fast-syntax-highlighting
 znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
-znap source ptavares/zsh-direnv
+
+alias claude="$HOME/.claude/local/claude"
 
 znap eval starship 'starship init zsh --print-full-init'
+znap prompt
 
-export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
-
-# proto
-export PROTO_HOME="$HOME/.proto";
-export PATH="$PROTO_HOME/shims:$PROTO_HOME/bin:$PATH";

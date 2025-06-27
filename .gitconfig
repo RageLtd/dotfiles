@@ -23,7 +23,5 @@
 	features = decorations
 	file-style = bold yellow ul
 	hunk-header-style = file line-number syntax
-[gpg "ssh"]
-	program = /opt/1Password/op-ssh-sign
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
