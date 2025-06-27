@@ -1,0 +1,265 @@
+{
+  "language_models": {
+    "copilot_chat": {
+      "api_url": "https://api.githubcopilot.com/chat/completions",
+      "auth_url": "https://api.github.com/copilot_internal/v2/token",
+      "models_url": "https://api.githubcopilot.com/models"
+    }
+  },
+  "agent": {
+    "profiles": {
+      "write": {
+        "name": "Write",
+        "tools": {
+          "copy_path": true,
+          "create_directory": true,
+          "delete_path": true,
+          "diagnostics": true,
+          "edit_file": true,
+          "fetch": true,
+          "list_directory": true,
+          "move_path": true,
+          "now": true,
+          "find_path": true,
+          "read_file": true,
+          "grep": true,
+          "terminal": true,
+          "thinking": true,
+          "web_search": true,
+          "open": true
+        },
+        "enable_all_context_servers": true,
+        "context_servers": {
+          "NX MCP": {
+            "tools": {
+              "nx_docs": true,
+              "nx_available_plugins": false
+            }
+          }
+        }
+      }
+    },
+    "default_profile": "ask",
+    "model_parameters": [],
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-thinking"
+    },
+    "version": "2"
+  },
+  "context_servers": {
+    "Serena": {
+      "source": "custom",
+      "command": {
+        "path": "uvx",
+        "args": [
+          "--from",
+          "git+https://github.com/oraios/serena",
+          "serena-mcp-server",
+          "--context",
+          "ide-assistant"
+        ],
+        "env": null
+      },
+      "settings": {}
+    },
+    "mcp-server-github": {
+      "source": "extension",
+      "settings": {
+        "github_personal_access_token": "GITHUB_PERSONAL_ACCESS_TOKEN"
+      }
+    },
+    "nx-mcp": {
+      "source": "custom",
+      "type": "stdio",
+      "command": {
+        "path": "bunx",
+        "args": ["nx-mcp@latest", "/User/NathanDeVuono/Work/monorepo"]
+      }
+    }
+  },
+  "icon_theme": "Catppuccin Macchiato",
+  "theme": "Catppuccin Macchiato",
+  "auto_update_extensions": {
+    "ruby": false
+  },
+  "base_keymap": "VSCode",
+  "terminal": {
+    "dock": "bottom",
+    "font_size": 14.0
+  },
+  "show_whitespaces": "boundary",
+  "show_edit_predictions": true,
+  "ensure_final_newline_on_save": true,
+  "tab_size": 2,
+  "ssh_connections": [
+    {
+      "host": "charybdis.lan",
+      "username": "rageltd",
+      "args": ["-A"],
+      "projects": [
+        {
+          "paths": ["/var/lib/ollama/blobs"]
+        },
+        {
+          "paths": ["/workspaces/app"]
+        }
+      ]
+    },
+    {
+      "host": "ulysses.lan",
+      "projects": [
+        {
+          "paths": ["/home/rageltd/Work/app/frontend"]
+        }
+      ],
+      "port_forwards": [
+        {
+          "local_port": 3000,
+          "remote_port": 3000,
+          "remote_host": "ulysses.lan"
+        },
+        {
+          "local_port": 3001,
+          "remote_port": 3001,
+          "remote_host": "ulysses.lan"
+        },
+        {
+          "local_port": 4000,
+          "remote_port": 4000,
+          "remote_host": "ulysses.lan"
+        }
+      ]
+    }
+  ],
+  "telemetry": {
+    "diagnostics": true,
+    "metrics": true
+  },
+  "buffer_font_size": 14,
+  "buffer_font_family": "Hack Nerd Font Mono",
+  "lsp": {
+    "solargraph": {
+      "settings": {
+        "use_bundler": false
+      },
+      "initialization_options": {
+        "diagnostics": true,
+        "formatting": true
+      }
+    }
+  },
+  "languages": {
+    "Ruby": {
+      "language_servers": ["solargraph"]
+    },
+    "JavaScript": {
+      "language_servers": [
+        "biome",
+        "!eslint",
+        "!prettier",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "TypeScript": {
+      "language_servers": [
+        "biome",
+        "!eslint",
+        "!prettier",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "JSX": {
+      "language_servers": [
+        "biome",
+        "!eslint",
+        "!prettier",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "TSX": {
+      "language_servers": [
+        "biome",
+        "!eslint",
+        "!prettier",
+        "!typescript-language-server",
+        "..."
+      ],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "HTML": {
+      "language_servers": ["biome", "!prettier", "..."],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "CSS": {
+      "language_servers": ["biome", "!prettier", "..."],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "SCSS": {
+      "language_servers": ["biome", "!prettier", "..."],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "JSON": {
+      "language_servers": ["biome", "!prettier", "..."],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "YAML": {
+      "language_servers": ["biome", "!prettier", "..."],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    },
+    "Markdown": {
+      "language_servers": ["biome"],
+      "formatter": { "language_server": { "name": "biome" } },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true
+      }
+    }
+  },
+  "minimap": {
+    "display_in": "active_editor",
+    "show": "auto"
+  }
+}
