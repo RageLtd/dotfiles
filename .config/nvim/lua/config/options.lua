@@ -37,3 +37,6 @@ opt.scrolloff = 8        -- Keep 8 lines above/below cursor
 opt.sidescrolloff = 8    -- Keep 8 columns left/right of cursor
 opt.wrap = false         -- Don\`t wrap lines
 opt.linebreak = true     -- Break lines at word boundaries if wrap is enabled
+
+-- Shell configuration to use rbenv
+opt.shell = "/bin/zsh"

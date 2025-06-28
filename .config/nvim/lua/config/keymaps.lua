@@ -14,7 +14,7 @@ map({ "n", "i" }, "<C-y>", "<cmd>redo<cr>", { desc = "Redo" })
 map("n", "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Find Files" })
 map("n", "<C-S-p>", "<cmd>Telescope commands<cr>", { desc = "Command Palette" })
 map("n", "<C-S-f>", "<cmd>Telescope live_grep<cr>", { desc = "Search in Files" })
-map("n", "<C-S-e>", "<cmd>Neotree toggle<cr>", { desc = "Toggle Explorer" })
+map("n", "<C-S-e>", function() Snacks.explorer() end, { desc = "Toggle Explorer" })
 
 -- Terminal toggle (using Snacks.terminal - modern LazyVim)
 map("n", "<C-`>", function() Snacks.terminal() end, { desc = "Terminal" })
@@ -47,12 +47,15 @@ map("n", "<F2>", vim.lsp.buf.rename, { desc = "Rename Symbol" })
 map("n", "<C-S-k>", vim.lsp.buf.hover, { desc = "Hover Documentation" })
 
 -- Panel toggles
-map("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Explorer" })
+map("n", "<leader>e", function() Snacks.explorer() end, { desc = "Explorer" })
 
--- Explorer file visibility toggles (corrected commands)
-map("n", "<leader>eh", function()
-  require("neo-tree.command").execute({ action = "show", source = "filesystem", toggle = true, reveal = true })
-end, { desc = "Toggle Neo-tree" })
+-- Explorer file visibility toggles (Snacks explorer)
+map("n", "<leader>eh", function() Snacks.explorer() end, { desc = "Toggle Explorer" })
+map("n", "<leader>ei", function() 
+  -- Toggle gitignored files visibility in explorer
+  vim.notify("Use 'I' key inside explorer to toggle ignored files", vim.log.levels.INFO)
+  Snacks.explorer()
+end, { desc = "Explorer - Toggle Ignored Files" })
 
 -- Git integration (using modern Snacks.lazygit)
 map("n", "<leader>gg", function() Snacks.lazygit() end, { desc = "LazyGit" })
@@ -67,7 +70,4 @@ map("n", "<leader>bt", "<cmd>!bun test<cr>", { desc = "Bun Test" })
 map("n", "<leader>bi", "<cmd>!bun install<cr>", { desc = "Bun Install" })
 map("n", "<leader>bd", "<cmd>!bun run dev<cr>", { desc = "Bun Dev" })
 
--- AI/CodeCompanion shortcuts (quick access)
-map("n", "<C-a>", "<cmd>CodeCompanionActions<cr>", { desc = "AI Actions" })
-map("v", "<C-a>", "<cmd>CodeCompanionActions<cr>", { desc = "AI Actions" })
-map("n", "<leader>cc", "<cmd>CodeCompanionChat<cr>", { desc = "AI Chat" })
+-- Note: <leader>cc is used by Claude Code plugin

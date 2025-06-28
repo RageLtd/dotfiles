@@ -2,7 +2,7 @@ return {
   -- Catppuccin theme configuration
   {
     "catppuccin/nvim",
-    name = "catppuccin", 
+    name = "catppuccin",
     priority = 1000,
     opts = {
       flavour = "macchiato",
@@ -51,7 +51,7 @@ return {
       },
     },
   },
-  
+
   -- Web devicons with Catppuccin colors
   {
     "nvim-tree/nvim-web-devicons",

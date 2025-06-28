@@ -34,29 +34,29 @@ return {
         indent = {
           with_expanders = true,
           expander_collapsed = "󰅂", -- Catppuccin-style arrow
-          expander_expanded = "󰅀",  -- Catppuccin-style arrow
+          expander_expanded = "󰅀", -- Catppuccin-style arrow
           expander_highlight = "NeoTreeExpander",
         },
         icon = {
           folder_closed = "󰉋", -- Catppuccin folder icon
-          folder_open = "󰝰",   -- Catppuccin open folder icon
-          folder_empty = "󰉖",  -- Catppuccin empty folder icon
+          folder_open = "󰝰", -- Catppuccin open folder icon
+          folder_empty = "󰉖", -- Catppuccin empty folder icon
           folder_empty_open = "󰷏", -- Catppuccin empty open folder
-          default = "󰈚",       -- Default file icon
+          default = "󰈚", -- Default file icon
           highlight = "NeoTreeFileIcon",
         },
         git_status = {
           symbols = {
             -- Git status symbols with Catppuccin styling
-            added     = "✚",  -- Green
-            modified  = "●",  -- Yellow  
-            deleted   = "✖",  -- Red
-            renamed   = "󰁕", -- Blue
-            untracked = "★",  -- White
-            ignored   = "󰙎", -- Grey (special symbol for ignored files)
-            unstaged  = "󰄱", -- Orange
-            staged    = "✓",  -- Green
-            conflict  = "󰀧", -- Red
+            added = "✚", -- Green
+            modified = "●", -- Yellow
+            deleted = "✖", -- Red
+            renamed = "󰁕", -- Blue
+            untracked = "★", -- White
+            ignored = "󰙎", -- Grey (special symbol for ignored files)
+            unstaged = "󰄱", -- Orange
+            staged = "✓", -- Green
+            conflict = "󰀧", -- Red
           },
         },
         name = {
@@ -72,7 +72,7 @@ return {
         -- Catppuccin Macchiato colors
         local colors = {
           text = "#cdd6f4",
-          surface2 = "#6c7086", 
+          surface2 = "#6c7086",
           mauve = "#cba6f7",
           blue = "#89b4fa",
           green = "#a6e3a1",
@@ -81,21 +81,21 @@ return {
           peach = "#fab387",
           pink = "#f5c2e7",
         }
-        
+
         -- File explorer highlights
         vim.api.nvim_set_hl(0, "NeoTreeGitIgnored", {
           fg = colors.surface2,
           italic = true,
         })
-        
+
         vim.api.nvim_set_hl(0, "NeoTreeExpander", {
           fg = colors.mauve,
         })
-        
+
         vim.api.nvim_set_hl(0, "NeoTreeFileIcon", {
           fg = colors.blue,
         })
-        
+
         -- Git status colors
         vim.api.nvim_set_hl(0, "NeoTreeGitAdded", { fg = colors.green })
         vim.api.nvim_set_hl(0, "NeoTreeGitModified", { fg = colors.yellow })
@@ -130,7 +130,7 @@ return {
       timeout = 3000,
       icons = {
         ERROR = "󰅚",
-        WARN = "󰀪", 
+        WARN = "󰀪",
         INFO = "󰋽",
         DEBUG = "󰃤",
         TRACE = "✎",

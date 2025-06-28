@@ -2,7 +2,7 @@ return {
   {
     "coder/claudecode.nvim",
     dependencies = {
-      "folke/snacks.nvim", -- Optional: Enhanced terminal support
+      "folke/snacks.nvim", -- Enhanced terminal support (preferred provider)
     },
     config = function()
       -- Ensure Claude CLI is in PATH for the plugin
@@ -13,59 +13,59 @@ return {
       end
       
       require("claudecode").setup({
-        -- Logging level
-        log_level = "error",
+        -- Server Configuration
+        port_range = { min = 10000, max = 65535 },
+        auto_start = true,
+        log_level = "warn", -- Reduced noise: warn, error only
         
-        -- Auto-start configuration
-        auto_start = true,                   -- Allow starting with buffers open
+        -- Selection and Context Tracking
+        track_selection = true,
+        visual_demotion_delay_ms = 50, -- Quick visual selection updates
         
-        -- Terminal Configuration for Right-Side Panel
+        -- Connection Settings (optimized timeouts)
+        connection_wait_delay = 200,
+        connection_timeout = 15000, -- Increased for reliability
+        queue_timeout = 5000,
+        
+        -- Terminal Configuration (using official options)
         terminal = {
-          split_side = "right",              -- Right-side panel
-          split_width_percentage = 0.35,     -- 35% of screen width
-          auto_close = true,                 -- Close panel when Claude exits
-          reuse_existing = true,             -- Reuse existing terminal if available
+          split_side = "right",
+          split_width_percentage = 0.35, -- Slightly wider for better UX
+          provider = "snacks", -- Explicitly use snacks for consistency
+          auto_close = true,
         },
         
-        -- Connection settings
-        connection_timeout = 10000,          -- 10 second timeout for connection
-        track_selection = true,              -- Track buffer selection changes
+        -- Diff Integration (enhanced with all available options)
+        diff_opts = {
+          auto_close_on_accept = true,
+          show_diff_stats = true, -- Show insertion/deletion counts
+          vertical_split = true,
+          open_in_current_tab = true,
+        },
       })
     end,
     
     keys = {
-      -- Main Claude Code toggle (works in normal and visual modes)
+      -- Core Claude Code commands (official recommendations)
       { "<leader>cc", "<cmd>ClaudeCode<cr>", mode = { "n", "v" }, desc = "🤖 Toggle Claude Code" },
+      { "<leader>cf", "<cmd>ClaudeCodeFocus<cr>", desc = "🎯 Focus Claude Terminal" },
+      { "<leader>cs", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "📤 Send Selection to Claude" },
       
-      -- Send selection to Claude
-      { "<leader>cs", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "📤 Send to Claude" },
+      -- Diff management (optimized keybindings)
+      { "<leader>ca", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "✅ Accept Diff" },
+      { "<leader>cd", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "❌ Deny Diff" },
       
-      -- Diff management
-      { "<leader>ca", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "✅ Accept Changes" },
-      { "<leader>cr", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "❌ Reject Changes" },
-      { "<leader>cd", "<cmd>ClaudeCodeDiffToggle<cr>", desc = "🔄 Toggle Diff View" },
-      
-      -- Context management
-      { "<leader>cf", "<cmd>ClaudeCodeAddFile<cr>", desc = "📁 Add File Context" },
-      { "<leader>cb", "<cmd>ClaudeCodeAddBuffer<cr>", desc = "📄 Add Buffer Context" },
-      
-      -- Quick actions
-      { "<leader>ce", "<cmd>ClaudeCodeExplain<cr>", mode = { "n", "v" }, desc = "📖 Explain Code" },
-      { "<leader>co", "<cmd>ClaudeCodeOptimize<cr>", mode = { "n", "v" }, desc = "⚡ Optimize Code" },
-      { "<leader>ct", "<cmd>ClaudeCodeTest<cr>", mode = { "n", "v" }, desc = "🧪 Generate Tests" },
+      -- Status and debugging
+      { "<leader>cS", "<cmd>ClaudeCodeStatus<cr>", desc = "📊 Claude Status" },
     },
     
     cmd = {
       "ClaudeCode",
+      "ClaudeCodeFocus",
       "ClaudeCodeSend", 
       "ClaudeCodeDiffAccept",
       "ClaudeCodeDiffDeny",
-      "ClaudeCodeDiffToggle",
-      "ClaudeCodeAddFile",
-      "ClaudeCodeAddBuffer",
-      "ClaudeCodeExplain",
-      "ClaudeCodeOptimize",
-      "ClaudeCodeTest",
+      "ClaudeCodeStatus",
     },
     
     -- Load on these events (including when buffers are already open)

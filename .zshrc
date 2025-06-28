@@ -22,3 +22,10 @@ alias claude="$HOME/.claude/local/claude"
 znap eval starship 'starship init zsh --print-full-init'
 znap prompt
 
+export PATH="$HOME/.bun/bin:$PATH"
+
+znap eval rbenv 'rbenv init -'
+
+
+# bun completions
+[ -s "/Users/NathanDeVuono/.bun/_bun" ] && source "/Users/NathanDeVuono/.bun/_bun"

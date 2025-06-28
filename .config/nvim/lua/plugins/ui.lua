@@ -11,19 +11,19 @@ return {
       },
       sections = {
         lualine_a = { { "mode", separator = { left = "" }, right_padding = 2 } },
-        lualine_b = { 
+        lualine_b = {
           { "branch", icon = "" },
           { "diff", symbols = { added = " ", modified = " ", removed = " " } },
-          { "diagnostics", symbols = { error = " ", warn = " ", info = " ", hint = " " } }
+          { "diagnostics", symbols = { error = " ", warn = " ", info = " ", hint = " " } },
         },
         lualine_c = { { "filename", file_status = true, path = 1 } },
         lualine_x = {
           { "encoding" },
           { "fileformat", symbols = { unix = "", dos = "", mac = "" } },
-          { "filetype", icon_only = false }
+          { "filetype", icon_only = false },
         },
         lualine_y = { "progress" },
-        lualine_z = { { "location", separator = { right = "" }, left_padding = 2 } }
+        lualine_z = { { "location", separator = { right = "" }, left_padding = 2 } },
       },
     },
   },
@@ -67,11 +67,11 @@ return {
         hover = {
           enabled = true,
           delay = 200,
-          reveal = {"close"}
+          reveal = { "close" },
         },
         sort_by = "insert_after_current",
       })
-      
+
       return opts
     end,
   },
@@ -110,7 +110,7 @@ return {
           "--smart-case",
         },
       })
-      
+
       return opts
     end,
   },
@@ -124,13 +124,13 @@ return {
         separator = "➜",
         group = "+",
       }
-      
+
       opts.key_labels = {
         ["<space>"] = "SPC",
         ["<cr>"] = "RET",
         ["<tab>"] = "TAB",
       }
-      
+
       return opts
     end,
   },
@@ -141,7 +141,7 @@ return {
     opts = function(_, opts)
       local cmp = require("cmp")
       local colors = require("catppuccin.palettes").get_palette("macchiato")
-      
+
       opts.formatting = {
         format = function(entry, vim_item)
           local kind_icons = {
@@ -171,7 +171,7 @@ return {
             Operator = "󰆕",
             TypeParameter = "󰅲",
           }
-          
+
           vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind)
           vim_item.menu = ({
             buffer = "[Buffer]",
@@ -180,11 +180,11 @@ return {
             nvim_lua = "[Lua]",
             latex_symbols = "[LaTeX]",
           })[entry.source.name]
-          
+
           return vim_item
-        end
+        end,
       }
-      
+
       return opts
     end,
   },
@@ -197,14 +197,14 @@ return {
         Error = " ",
         Warn = " ",
         Hint = " ",
-        Info = " "
+        Info = " ",
       }
-      
+
       for type, icon in pairs(signs) do
         local hl = "DiagnosticSign" .. type
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
       end
-      
+
       return opts
     end,
   },
@@ -223,10 +223,10 @@ return {
         ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
         ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
       ]]
-      
+
       opts.config = opts.config or {}
       opts.config.header = vim.split(logo, "\n")
-      
+
       opts.config.center = {
         { action = "Telescope find_files", desc = " Find file", icon = " ", key = "f" },
         { action = "ene | startinsert", desc = " New file", icon = " ", key = "n" },
@@ -236,7 +236,7 @@ return {
         { action = "Lazy", desc = " Lazy", icon = "󰒲 ", key = "l" },
         { action = "qa", desc = " Quit", icon = " ", key = "q" },
       }
-      
+
       return opts
     end,
   },
@@ -249,9 +249,9 @@ return {
         icons = {
           package_installed = "✓",
           package_pending = "➜",
-          package_uninstalled = "✗"
-        }
-      }
+          package_uninstalled = "✗",
+        },
+      },
     },
   },
 

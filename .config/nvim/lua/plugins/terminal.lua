@@ -5,16 +5,16 @@ return {
     opts = {
       terminal = {
         win = {
-          position = "float",
-          border = "rounded",
+          position = "bottom",
+          border = "enabled",
           width = 0.8,
-          height = 0.8,
+          height = 0.25,
           backdrop = 60,
         },
       },
     },
   },
-  
+
   -- Disable ToggleTerm to avoid conflicts
   {
     "akinsho/toggleterm.nvim",

@@ -37,7 +37,13 @@ return {
   {
     "nvim-pack/nvim-spectre",
     keys = {
-      { "<leader>sr", function() require("spectre").toggle() end, desc = "Replace in files (Spectre)" },
+      {
+        "<leader>sr",
+        function()
+          require("spectre").toggle()
+        end,
+        desc = "Replace in files (Spectre)",
+      },
     },
   },
 
@@ -67,9 +73,13 @@ return {
         map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
         map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
         map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")
-        map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
+        map("n", "<leader>ghb", function()
+          gs.blame_line({ full = true })
+        end, "Blame Line")
         map("n", "<leader>ghd", gs.diffthis, "Diff This")
-        map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
+        map("n", "<leader>ghD", function()
+          gs.diffthis("~")
+        end, "Diff This ~")
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
       end,
     },
@@ -98,16 +108,16 @@ return {
     },
     config = function(_, opts)
       require("illuminate").configure(opts)
-      
+
       local function map(key, dir, buffer)
         vim.keymap.set("n", key, function()
           require("illuminate")["goto_" .. dir .. "_reference"](false)
         end, { desc = dir:sub(1, 1):upper() .. dir:sub(2) .. " Reference", buffer = buffer })
       end
-      
+
       map("]]", "next")
       map("[[", "prev")
-      
+
       vim.api.nvim_create_autocmd("FileType", {
         callback = function()
           local buffer = vim.api.nvim_get_current_buf()
