@@ -1,88 +1,32 @@
 {
-  "language_models": {
-    "copilot_chat": {
-      "api_url": "https://api.githubcopilot.com/chat/completions",
-      "auth_url": "https://api.github.com/copilot_internal/v2/token",
-      "models_url": "https://api.githubcopilot.com/models"
-    }
-  },
   "agent": {
-    "profiles": {
-      "write": {
-        "name": "Write",
-        "tools": {
-          "copy_path": true,
-          "create_directory": true,
-          "delete_path": true,
-          "diagnostics": true,
-          "edit_file": true,
-          "fetch": true,
-          "list_directory": true,
-          "move_path": true,
-          "now": true,
-          "find_path": true,
-          "read_file": true,
-          "grep": true,
-          "terminal": true,
-          "thinking": true,
-          "web_search": true,
-          "open": true
-        },
-        "enable_all_context_servers": true,
-        "context_servers": {
-          "NX MCP": {
-            "tools": {
-              "nx_docs": true,
-              "nx_available_plugins": false
-            }
-          }
-        }
-      }
-    },
-    "default_profile": "ask",
+    "always_allow_tool_actions": true,
+    "default_profile": "write",
     "model_parameters": [],
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4-thinking"
-    },
-    "version": "2"
+      "provider": "lmstudio",
+      "model": "claude-opus-plan-mode"
+    }
   },
   "context_servers": {
-    "Serena": {
-      "source": "custom",
-      "command": {
-        "path": "uvx",
-        "args": [
-          "--from",
-          "git+https://github.com/oraios/serena",
-          "serena-mcp-server",
-          "--context",
-          "ide-assistant"
-        ],
-        "env": null
-      },
-      "settings": {}
-    },
-    "mcp-server-github": {
+    "mcp-server-context7": {
       "source": "extension",
+      "enabled": true,
       "settings": {
-        "github_personal_access_token": "GITHUB_PERSONAL_ACCESS_TOKEN"
+        "default_minimum_tokens": "10000"
       }
     },
-    "nx-mcp": {
+    "memory": {
       "source": "custom",
-      "type": "stdio",
-      "command": {
-        "path": "bunx",
-        "args": ["nx-mcp@latest", "/User/NathanDeVuono/Work/monorepo"]
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_FILE_PATH": "${PWD}/.claude/memory.json"
       }
     }
   },
-  "icon_theme": "Catppuccin Macchiato",
-  "theme": "Catppuccin Macchiato",
-  "auto_update_extensions": {
-    "ruby": false
-  },
+  "icon_theme": "Bearded Icon Theme",
+  "theme": "Bearded Theme Monokai Black",
   "base_keymap": "VSCode",
   "terminal": {
     "dock": "bottom",
@@ -92,46 +36,6 @@
   "show_edit_predictions": true,
   "ensure_final_newline_on_save": true,
   "tab_size": 2,
-  "ssh_connections": [
-    {
-      "host": "charybdis.lan",
-      "username": "rageltd",
-      "args": ["-A"],
-      "projects": [
-        {
-          "paths": ["/var/lib/ollama/blobs"]
-        },
-        {
-          "paths": ["/workspaces/app"]
-        }
-      ]
-    },
-    {
-      "host": "ulysses.lan",
-      "projects": [
-        {
-          "paths": ["/home/rageltd/Work/app/frontend"]
-        }
-      ],
-      "port_forwards": [
-        {
-          "local_port": 3000,
-          "remote_port": 3000,
-          "remote_host": "ulysses.lan"
-        },
-        {
-          "local_port": 3001,
-          "remote_port": 3001,
-          "remote_host": "ulysses.lan"
-        },
-        {
-          "local_port": 4000,
-          "remote_port": 4000,
-          "remote_host": "ulysses.lan"
-        }
-      ]
-    }
-  ],
   "telemetry": {
     "diagnostics": true,
     "metrics": true
@@ -141,7 +45,7 @@
   "lsp": {
     "solargraph": {
       "settings": {
-        "use_bundler": false
+        "use_bundler": true
       },
       "initialization_options": {
         "diagnostics": true,
@@ -149,18 +53,36 @@
       }
     }
   },
+  "inline_code_actions": true,
+  "git": {
+    "git_gutter": "tracked_files",
+    "inline_blame": null
+  },
+  "diagnostics": {
+    "button": true,
+    "include_warnings": true,
+    "lsp_pull_diagnostics": {
+      "enabled": true,
+      "debounce_ms": 50
+    },
+    "inline": {
+      "enabled": true,
+      "update_debounce_ms": 150,
+      "padding": 4,
+      "min_column": 0,
+      "max_severity": "error"
+    }
+  },
   "languages": {
     "Ruby": {
-      "language_servers": ["solargraph"]
+      "language_servers": ["solargraph"],
+      "formatter": { "language_server": { "name": "solargraph" } },
+      "code_actions_on_format": {
+        "source.fixAll.solargraph": true,
+        "source.organizeImports.solargraph": true
+      }
     },
     "JavaScript": {
-      "language_servers": [
-        "biome",
-        "!eslint",
-        "!prettier",
-        "!typescript-language-server",
-        "..."
-      ],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
@@ -168,27 +90,6 @@
       }
     },
     "TypeScript": {
-      "language_servers": [
-        "biome",
-        "!eslint",
-        "!prettier",
-        "!typescript-language-server",
-        "..."
-      ],
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
-    },
-    "JSX": {
-      "language_servers": [
-        "biome",
-        "!eslint",
-        "!prettier",
-        "!typescript-language-server",
-        "..."
-      ],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
@@ -196,13 +97,6 @@
       }
     },
     "TSX": {
-      "language_servers": [
-        "biome",
-        "!eslint",
-        "!prettier",
-        "!typescript-language-server",
-        "..."
-      ],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
@@ -210,7 +104,6 @@
       }
     },
     "HTML": {
-      "language_servers": ["biome", "!prettier", "..."],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
@@ -218,15 +111,6 @@
       }
     },
     "CSS": {
-      "language_servers": ["biome", "!prettier", "..."],
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
-    },
-    "SCSS": {
-      "language_servers": ["biome", "!prettier", "..."],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
@@ -234,7 +118,6 @@
       }
     },
     "JSON": {
-      "language_servers": ["biome", "!prettier", "..."],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
@@ -242,7 +125,6 @@
       }
     },
     "YAML": {
-      "language_servers": ["biome", "!prettier", "..."],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
@@ -250,16 +132,11 @@
       }
     },
     "Markdown": {
-      "language_servers": ["biome"],
       "formatter": { "language_server": { "name": "biome" } },
       "code_actions_on_format": {
         "source.fixAll.biome": true,
         "source.organizeImports.biome": true
       }
     }
-  },
-  "minimap": {
-    "display_in": "active_editor",
-    "show": "auto"
   }
 }

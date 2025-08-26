@@ -17,15 +17,29 @@ znap source zdharma-continuum/fast-syntax-highlighting
 znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
 
-alias claude="$HOME/.claude/local/claude"
+znap eval rbenv 'rbenv init -'
 
 znap eval starship 'starship init zsh --print-full-init'
 znap prompt
 
 export PATH="$HOME/.bun/bin:$PATH"
+export PATH="/opt/homebrew/bin/:$PATH"
 
-znap eval rbenv 'rbenv init -'
-
+export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
 
 # bun completions
 [ -s "/Users/NathanDeVuono/.bun/_bun" ] && source "/Users/NathanDeVuono/.bun/_bun"
+export PATH="/Users/rageltd/.cache/.bun/bin:$PATH"
+export PATH="/Users/rageltd/.local/bin:$PATH"
+
+export COMPOSE_BAKE=true
+
+# opencode
+export PATH=/Users/rageltd/.opencode/bin:$PATH
+
+# opencode
+export PATH=/Users/rageltd/bin:$PATH
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/rageltd/.lmstudio/bin"
+# End of LM Studio CLI section

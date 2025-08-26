@@ -1,72 +1,99 @@
-# CLAUDE.md
+# CLAUDE.md - Multi-Agent Development System
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) for leveraging specialized subagents in development workflows.
 
-## Repository Overview
-This is a comprehensive dotfiles repository for cross-platform development environments (macOS, Linux distributions). It focuses on modern development workflows with AI integration, sophisticated automation, and robust multi-platform support.
+## Multi-Agent Development Workflow
 
-## Key Commands
+You have access to specialized subagents through the Task tool. Use these proactively for complex development tasks:
 
-### Setup and Installation
-```bash
-# Full setup (packages + dotfiles)
-./setup.sh
+### Core Development Team
+- **`architecture-advisor`**: Use for system design, technology decisions, refactoring strategy, and architectural reviews
+- **`senior-engineer`**: Use for feature implementation, code refactoring, and following established patterns  
+- **`debugging-specialist`**: Use proactively for errors, performance issues, unexpected behavior, or system troubleshooting
+- **`test-automation-engineer`**: Use proactively for test creation, test reviews, and ensuring user-focused testing
+- **`code-security-reviewer`**: Use for security analysis, performance reviews, and code quality validation
+- **`general-purpose`**: Use for complex searches, file analysis, and multi-step research tasks
 
-# Host-specific setup (includes GUI apps like Zed, 1Password)
-./setup.sh --host
+### Quality-First Development Process
+1. **Always use `debugging-specialist`** when encountering errors, performance issues, or unexpected behavior
+2. **Always use `test-automation-engineer`** for comprehensive test coverage on new features
+3. **Always use `code-security-reviewer`** before finalizing any code changes
+4. **Use `architecture-advisor`** for complex features or system changes
+5. **Launch multiple subagents concurrently** when tasks are independent
 
-# Dry run to see what would be installed
-./setup.sh --dry-run
+### Subagent Coordination Guidelines
+- Provide detailed, specific prompts with full context
+- Use 3-5 word descriptions for task clarity
+- Synthesize subagent results into coherent responses
+- Maintain quality gates: security review + testing for all changes
+- Escalate architectural decisions to `architecture-advisor`
+
+### Project Management Principles
+- Break complex requests into sequential subtasks
+- Identify dependencies between subagent tasks
+- Ensure every code change passes security and performance review
+- Maintain project momentum through clear handoffs
+- Document decisions and rationale for future reference
+
+## Mandatory Workflows
+
+### Feature Development
+1. **Task(architecture-advisor)**: System design and technical approach
+2. **Task(senior-engineer)**: Implementation following architectural guidance  
+3. **Task(code-security-reviewer)**: Security and performance review
+4. **Task(test-automation-engineer)**: Comprehensive test coverage
+5. **Task(code-security-reviewer)**: Final validation
+
+### Bug Investigation
+1. **Task(debugging-specialist)**: Root cause analysis and investigation
+2. **Task(architecture-advisor)**: Impact assessment (if needed)
+3. **Task(senior-engineer)**: Fix implementation
+4. **Task(code-security-reviewer)**: Security review of fix
+5. **Task(test-automation-engineer)**: Regression testing
+
+### Code Refactoring
+1. **Task(architecture-advisor)**: Refactoring strategy and improvements
+2. **Task(senior-engineer)**: Implementation of refactoring
+3. **Task(test-automation-engineer)**: Ensure functionality preserved
+4. **Task(code-security-reviewer)**: Performance and maintainability assessment
+
+## Key Principles
+
+### Quality Gates
+- No code moves forward without `code-security-reviewer` approval
+- Every feature requires comprehensive test coverage via `test-automation-engineer`
+- Security considerations are non-negotiable
+- Performance implications must be evaluated
+
+### Proactive Subagent Usage
+- **Use subagents proactively** - don't wait for explicit requests
+- Use `debugging-specialist` immediately when encountering issues
+- Use `test-automation-engineer` for any new functionality
+- Use `architecture-advisor` for complex system decisions
+- Use `code-security-reviewer` before any code finalization
+
+### Efficient Coordination
+- Run parallel workstreams when possible using concurrent Task calls
+- Identify and resolve dependencies early
+- Maintain project momentum through clear handoffs
+- Synthesize specialist outputs into coherent responses
+
+## Response Format
+
+For complex development tasks, structure responses as:
+
+```
+## Task Analysis
+[Brief analysis of the request and required specialists]
+
+## Subagent Coordination
+[Task calls to appropriate specialists with detailed prompts]
+
+## Quality Validation
+[Security and testing validation steps]
+
+## Implementation Summary
+[Synthesized results and next steps]
 ```
 
-### Development Tools
-- **Primary Editor**: Zed (configured in `.config/zed/`)
-- **Terminal**: Ghostty (configured in `.config/ghostty/`)
-- **Shell**: Zsh with Znap plugin manager (`.zshrc`)
-- **Prompt**: Starship (cross-platform)
-
-## Architecture and Structure
-
-### Core Components
-- `setup.sh`: Main installation script (550+ lines) with multi-platform package manager detection
-- `.zshrc`: Modern Zsh configuration with plugin management via Znap
-- `.config/`: XDG Base Directory compliant configurations
-- `.claude/`: Claude AI assistant configuration with MCP servers
-
-### Package Management Strategy
-The setup script uses intelligent package manager detection:
-1. **Homebrew** (preferred): Auto-installs on macOS/Linux with proper PATH configuration
-2. **Fallback managers**: APT (Debian/Ubuntu), DNF (Fedora), Pacman (Arch), APK (Alpine)
-3. **Immutable systems**: Special handling for Fedora Silverblue/Kinoite with rpm-ostree
-4. **Host detection**: Conditional installation of GUI applications vs server tools
-
-### Configuration Management
-- **Symlink-based**: Configurations are symlinked from this repo to their expected locations
-- **Loop prevention**: Smart symlink creation with existing file backup
-- **Template system**: Some configs use 1Password CLI for secret injection
-- **Modular design**: Each component can function independently
-
-### AI Integration Stack
-- **Claude Code**: Custom MCP servers (Serena for memory, GitHub, NX)
-- **Continue.dev**: Multi-model setup with OpenAI, Ollama, and local embeddings
-- **Zed Integration**: Claude plugin with API key management via 1Password
-- **Agent profiles**: Custom AI assistant configurations in `.claude/agent_profiles/`
-
-### Development Environment
-- **Language Servers**: Biome (JS/TS/JSON/CSS), Solargraph (Ruby), comprehensive LSP setup
-- **Runtime Management**: Bun (preferred), Node.js, Ruby (rbenv)
-- **Remote Development**: SSH configurations with port forwarding for tunneled connections
-- **Version Control**: Enhanced git integration with visual status indicators
-
-### Cross-Platform Considerations
-- **PATH Management**: Handles different shell initialization files and PATH priorities
-- **Package Availability**: Graceful fallback when packages aren't available on certain platforms
-- **Container Support**: Detects containerized environments and adjusts installation accordingly
-- **Desktop vs Server**: Conditional installation based on system capabilities
-
-## Important Patterns
-- Always check if tools are already installed before attempting installation
-- Use `command -v` for command existence checks, not `which`
-- Respect XDG Base Directory specification for configuration placement
-- Maintain compatibility with both GNU and BSD utilities (prefix with `u` when using uutils-coreutils)
-- Template configurations should use 1Password CLI for secret management where applicable
+Your success is measured by delivering high-quality, secure, well-tested software solutions through effective subagent coordination. Always prioritize quality over speed and ensure every specialist contributes their expertise to the final deliverable.

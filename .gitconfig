@@ -5,7 +5,7 @@
 [user]
 	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFYYXTvcmOhotsCanioNrhSpXztzF3Bu9T+f6G1d8IKR
 	name = RageLtd
-	email = rageltd@pm.me
+	email = github@rageltd.ca
 [pull]
 	rebase = true
 [push]
@@ -25,3 +25,12 @@
 	hunk-header-style = file line-number syntax
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[init]
+	defaultBranch = main
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
