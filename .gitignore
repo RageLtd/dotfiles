@@ -1,2 +1,18 @@
+# OS files
 .DS_Store
 **/.DS_Store
+
+# Claude Code local files (user-specific, not for version control)
+*.local.json
+*.local.md
+.claude/*.local.*
+
+# Editor backups
+*_backup*
+*.bak
+*.swp
+*~
+
+# Secrets (should never be committed)
+.env
+.env.*
