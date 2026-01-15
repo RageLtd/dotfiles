@@ -1,45 +1,56 @@
+# .zshrc - Interactive shell configuration
 
-# .zshrc is sourced in interactive shells.
-# It should contain commands to set up aliases,
-# functions, options, key bindings, etc.
-#
+# =============================================================================
+# PATH Configuration (consolidated)
+# =============================================================================
+typeset -U PATH  # Deduplicate PATH entries
 
-# Download Znap, if it's not there yet.
+# Homebrew (macOS or Linux)
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [[ -x "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# User paths
+path=(
+    $HOME/.bun/bin
+    $HOME/.cache/.bun/bin
+    $HOME/.local/bin
+    $HOME/.opencode/bin
+    $HOME/.lmstudio/bin
+    $HOME/.moose/bin
+    $HOME/bin
+    $path
+)
+
+# =============================================================================
+# Znap Plugin Manager
+# =============================================================================
 [[ -r ~/.znap/znap.zsh ]] ||
-    git clone --depth 1 -- \
-        https://github.com/marlonrichert/zsh-snap.git ~/.znap
-source ~/.znap/znap.zsh  # Start Znap
+    git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.znap
+source ~/.znap/znap.zsh
 zstyle ':znap:*' repos-dir ~/.znap/repos
 
 znap source mattmc3/zephyr plugins/{color,completion,directory,editor,environment,history,utility}
-
 znap source zdharma-continuum/fast-syntax-highlighting
 znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
 
-znap eval rbenv 'rbenv init -'
+# =============================================================================
+# Tool Initialization (only if installed)
+# =============================================================================
+command -v rbenv &>/dev/null && znap eval rbenv 'rbenv init -'
+command -v starship &>/dev/null && { znap eval starship 'starship init zsh --print-full-init'; znap prompt; }
 
-znap eval starship 'starship init zsh --print-full-init'
-znap prompt
+# Bun completions
+[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
 
-export PATH="$HOME/.bun/bin:$PATH"
-export PATH="/opt/homebrew/bin/:$PATH"
-
+# =============================================================================
+# Environment Variables
+# =============================================================================
 export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
-
-# bun completions
-[ -s "/Users/NathanDeVuono/.bun/_bun" ] && source "/Users/NathanDeVuono/.bun/_bun"
-export PATH="/Users/rageltd/.cache/.bun/bin:$PATH"
-export PATH="/Users/rageltd/.local/bin:$PATH"
-
-export COMPOSE_BAKE=true
-
-# opencode
-export PATH=/Users/rageltd/.opencode/bin:$PATH
-
-# opencode
-export PATH=/Users/rageltd/bin:$PATH
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/rageltd/.lmstudio/bin"
-# End of LM Studio CLI section
+export APOLLO_TELEMETRY_DISABLED=true
+export CLICKHOUSE_DATABASE=data_services

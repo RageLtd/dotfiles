@@ -1,36 +1,65 @@
 {
-  "agent": {
-    "always_allow_tool_actions": true,
-    "default_profile": "write",
-    "model_parameters": [],
-    "default_model": {
-      "provider": "lmstudio",
-      "model": "claude-opus-plan-mode"
-    }
-  },
   "context_servers": {
-    "mcp-server-context7": {
-      "source": "extension",
+    "mcp-server-tavily": {
       "enabled": true,
       "settings": {
-        "default_minimum_tokens": "10000"
-      }
-    },
-    "memory": {
-      "source": "custom",
-      "command": "bunx",
-      "args": ["@modelcontextprotocol/server-memory"],
-      "env": {
-        "MEMORY_FILE_PATH": "${PWD}/.claude/memory.json"
+        "tavily_api_key": "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"
       }
     }
+  },
+  "git_panel": {
+    "tree_view": true,
+    "sort_by_path": false,
+  },
+  "project_panel": {
+    "hide_hidden": false,
+    "hide_root": true,
+  },
+  "active_pane_modifiers": {
+    "border_size": 1.0,
+  },
+  "tabs": {
+    "show_diagnostics": "all",
+    "file_icons": true,
+    "git_status": true,
+  },
+  "title_bar": {
+    "show_menus": false,
+    "show_branch_icon": true,
+  },
+  "use_smartcase_search": true,
+  "toolbar": {
+    "code_actions": true,
+  },
+  "minimap": {
+    "show": "auto",
+  },
+  "auto_signature_help": true,
+  "redact_private_values": false,
+  "agent": {
+    "inline_assistant_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-thinking",
+    },
+    "always_allow_tool_actions": true,
+    "default_profile": "write",
+    "expand_edit_card": true,
+    "expand_terminal_card": true,
+    "model_parameters": [],
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-thinking",
+    },
   },
   "icon_theme": "Bearded Icon Theme",
   "theme": "Bearded Theme Monokai Black",
   "base_keymap": "VSCode",
   "terminal": {
+    "toolbar": {
+      "breadcrumbs": false,
+    },
     "dock": "bottom",
-    "font_size": 14.0
+    "font_size": 14.0,
   },
   "show_whitespaces": "boundary",
   "show_edit_predictions": true,
@@ -38,105 +67,182 @@
   "tab_size": 2,
   "telemetry": {
     "diagnostics": true,
-    "metrics": true
+    "metrics": true,
   },
+  "ui_font_size": 18,
   "buffer_font_size": 14,
   "buffer_font_family": "Hack Nerd Font Mono",
   "lsp": {
     "solargraph": {
       "settings": {
-        "use_bundler": true
+        "use_bundler": true,
       },
       "initialization_options": {
         "diagnostics": true,
-        "formatting": true
-      }
-    }
+        "formatting": true,
+      },
+    },
   },
   "inline_code_actions": true,
   "git": {
     "git_gutter": "tracked_files",
-    "inline_blame": null
+    "inline_blame": null,
   },
   "diagnostics": {
     "button": true,
     "include_warnings": true,
     "lsp_pull_diagnostics": {
       "enabled": true,
-      "debounce_ms": 50
+      "debounce_ms": 50,
     },
     "inline": {
       "enabled": true,
       "update_debounce_ms": 150,
       "padding": 4,
       "min_column": 0,
-      "max_severity": "error"
-    }
+      "max_severity": "error",
+    },
   },
   "languages": {
     "Ruby": {
       "language_servers": ["solargraph"],
-      "formatter": { "language_server": { "name": "solargraph" } },
-      "code_actions_on_format": {
-        "source.fixAll.solargraph": true,
-        "source.organizeImports.solargraph": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.solargraph",
+        },
+        {
+          "code_action": "source.organizeImports.solargraph",
+        },
+        {
+          "language_server": {
+            "name": "solargraph",
+          },
+        },
+      ],
     },
     "JavaScript": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
     },
     "TypeScript": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
     },
     "TSX": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
     },
     "HTML": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
     },
     "CSS": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
     },
     "JSON": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
     },
     "YAML": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
     },
     "Markdown": {
-      "formatter": { "language_server": { "name": "biome" } },
-      "code_actions_on_format": {
-        "source.fixAll.biome": true,
-        "source.organizeImports.biome": true
-      }
-    }
-  }
+      "formatter": [
+        {
+          "code_action": "source.fixAll.biome",
+        },
+        {
+          "code_action": "source.organizeImports.biome",
+        },
+        {
+          "language_server": {
+            "name": "biome",
+          },
+        },
+      ],
+    },
+    "Caddyfile": {},
+  },
+  "file_types": {
+    "Caddyfile": ["Caddyfile*", "*.caddyfile"],
+  },
 }

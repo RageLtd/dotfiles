@@ -1,284 +1,199 @@
 #!/bin/bash
 set -e
 
-IS_HOST=false
-# if host is passed in as an argument, skip some tools
-if [ "$1" = "--host" ]; then
-    IS_HOST=true
-fi
-
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# Function to install Homebrew if not present
-install_homebrew() {
-    if ! command_exists brew; then
-        echo "Installing Homebrew..."
-        
-        # Download and run Homebrew installer
-        if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
-            echo "Homebrew installation completed"
-            
-            # Add Homebrew to PATH for current session and future sessions
-            if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-                # Linux Homebrew paths
-                if [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
-                    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-                    
-                    # Add to shell configs
-                    for shell_config in ~/.bashrc ~/.zshrc ~/.profile; do
-                        if [[ -f "$shell_config" ]] || [[ "$shell_config" == ~/.bashrc ]] || [[ "$shell_config" == ~/.zshrc ]]; then
-                            if ! grep -q "linuxbrew" "$shell_config" 2>/dev/null; then
-                                echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "$shell_config"
-                            fi
-                        fi
-                    done
-                else
-                    echo "Warning: Homebrew installed but not found at expected location"
-                    return 1
-                fi
-            elif [[ "$OSTYPE" == "darwin"* ]]; then
-                # macOS Homebrew paths
-                if [[ -x "/opt/homebrew/bin/brew" ]]; then
-                    eval "$(/opt/homebrew/bin/brew shellenv)"
-                elif [[ -x "/usr/local/bin/brew" ]]; then
-                    eval "$(/usr/local/bin/brew shellenv)"
-                else
-                    echo "Warning: Homebrew installed but not found at expected location"
-                    return 1
-                fi
-            fi
-            
-            # Verify installation
-            if command_exists brew; then
-                echo "Homebrew successfully installed and configured"
-                return 0
-            else
-                echo "Homebrew installation appears to have failed"
-                return 1
-            fi
-        else
-            echo "Homebrew installation failed"
-            return 1
-        fi
-    else
-        echo "Homebrew already installed"
-        return 0
-    fi
-}
-
-# Function to install packages using Homebrew
-install_packages_brew() {
-    local packages="git zsh starship micro"
-    local missing_packages=""
-    
-    echo "Checking which packages need to be installed..."
-    for package in $packages; do
-        if ! brew list "$package" >/dev/null 2>&1; then
-            missing_packages="$missing_packages $package"
-        else
-            echo "$package is already installed"
-        fi
-    done
-    
-    if [[ -n "$missing_packages" ]]; then
-        echo "Installing missing packages with Homebrew:$missing_packages"
-        brew install $missing_packages
-    else
-        echo "All packages are already installed"
-    fi
-    
-    if $IS_HOST; then
-        echo "Checking host-specific tools..."
-        local missing_casks=""
-        
-        # Check cask applications
-        if ! brew list --cask zed >/dev/null 2>&1; then
-            missing_casks="$missing_casks zed"
-        else
-            echo "zed is already installed"
-        fi
-        
-        if ! brew list --cask 1password >/dev/null 2>&1; then
-            missing_casks="$missing_casks 1password"
-        else
-            echo "1password is already installed"
-        fi
-        
-        if ! brew list 1password-cli >/dev/null 2>&1; then
-            missing_casks="$missing_casks 1password-cli"
-        else
-            echo "1password-cli is already installed"
-        fi
-        
-        if [[ -n "$missing_casks" ]]; then
-            echo "Installing missing host-specific tools:$missing_casks"
-            # Install casks and regular packages separately
-            for cask in $missing_casks; do
-                if [[ "$cask" == "zed" || "$cask" == "1password" ]]; then
-                    brew install --cask "$cask"
-                else
-                    brew install "$cask"
-                fi
-            done
-        else
-            echo "All host-specific tools are already installed"
-        fi
-    fi
-    
-    # Install bun separately (not available in Homebrew)
-    if ! command_exists bun; then
-        echo "Installing bun runtime..."
-        curl -fsSL https://bun.sh/install | bash
-        # Add bun to PATH
-        export BUN_INSTALL="$HOME/.bun"
-        export PATH="$BUN_INSTALL/bin:$PATH"
-        
-        # Add to shell configs if they exist
-        for shell_config in ~/.bashrc ~/.zshrc ~/.profile; do
-            if [[ -f "$shell_config" ]] || [[ "$shell_config" == ~/.bashrc ]] || [[ "$shell_config" == ~/.zshrc ]]; then
-                if ! grep -q "BUN_INSTALL" "$shell_config" 2>/dev/null; then
-                    echo 'export BUN_INSTALL="$HOME/.bun"' >> "$shell_config"
-                    echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> "$shell_config"
-                fi
-            fi
-        done
-    else
-        echo "bun is already installed"
-    fi
-}
-
-# Install packages
-echo "Attempting to install and use Homebrew..."
-if install_homebrew; then
-    echo "Homebrew installation successful, using Homebrew for package management"
-    install_packages_brew
-else
-    echo "Homebrew installation failed, continuing with dotfiles setup"
-fi
-
-# Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="$SCRIPT_DIR"
+IS_HOST=false
+[[ "$1" == "--host" ]] && IS_HOST=true
 
-echo "Setting up dotfiles from $DOTFILES_DIR"
+# Colors
+red() { echo -e "\033[0;31m$1\033[0m"; }
+green() { echo -e "\033[0;32m$1\033[0m"; }
 
-# CRITICAL SAFETY CHECK: Never create symlinks that could overwrite dotfiles
-if [[ "$HOME" == "$DOTFILES_DIR"* ]]; then
-    echo "FATAL ERROR: This script is running from within the home directory"
-    echo "This would create circular symlinks. Move the dotfiles to a separate directory."
-    exit 1
-fi
-
-# Function to create a symlink - with absolute safety checks
-create_file_symlink() {
-    local source_file="$1"
-    local target_file="$2"
-    
-    # SAFETY CHECK 1: Source must be absolute and inside dotfiles directory
-    if [[ ! "$source_file" = "$DOTFILES_DIR"/* ]]; then
-        echo "ERROR: Source file $source_file is not inside dotfiles directory"
-        return 1
+# Detect package manager
+detect_pm() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "brew"
+    elif command -v brew &>/dev/null; then
+        echo "brew"  # Immutable distro with brew
+    elif command -v pacman &>/dev/null; then
+        echo "pacman"
+    elif command -v dnf &>/dev/null; then
+        echo "dnf"
+    else
+        echo "none"
     fi
-    
-    # SAFETY CHECK 2: Target must be absolute and OUTSIDE dotfiles directory
-    if [[ "$target_file" = "$DOTFILES_DIR"* ]]; then
-        echo "ERROR: Target $target_file is inside dotfiles directory - would create circular symlink"
-        return 1
-    fi
-    
-    # SAFETY CHECK 3: Target must be in home directory
-    if [[ ! "$target_file" = "$HOME"/* ]]; then
-        echo "ERROR: Target $target_file is not in home directory"
-        return 1
-    fi
-    
-    # SAFETY CHECK 4: Source file must exist and be a regular file (not a symlink)
-    if [[ ! -f "$source_file" ]] || [[ -L "$source_file" ]]; then
-        echo "ERROR: Source file $source_file does not exist, is not a regular file, or is a symlink"
-        return 1
-    fi
-    
-    # SAFETY CHECK 5: Prevent any symlink creation that could affect dotfiles
-    local source_realpath="$(realpath "$source_file")"
-    local target_realpath="$(realpath "$(dirname "$target_file")")/$(basename "$target_file")"
-    
-    if [[ "$source_realpath" == "$target_realpath" ]]; then
-        echo "ERROR: Source and target resolve to the same file"
-        return 1
-    fi
-    
-    # Create target directory if it doesn't exist
-    local target_dir="$(dirname "$target_file")"
-    if [[ ! -d "$target_dir" ]]; then
-        echo "Creating directory: $target_dir"
-        mkdir -p "$target_dir"
-    fi
-    
-    # Check if symlink already exists and points to correct location
-    if [[ -L "$target_file" ]] && [[ "$(readlink "$target_file")" == "$source_file" ]]; then
-        echo "Already linked: $target_file -> $source_file"
-        return 0
-    fi
-    
-    # Remove existing file/symlink if it exists
-    if [[ -e "$target_file" ]] || [[ -L "$target_file" ]]; then
-        echo "Removing existing: $target_file"
-        rm -rf "$target_file"
-    fi
-    
-    # Create the symlink
-    echo "Linking: $source_file -> $target_file"
-    ln -s "$source_file" "$target_file"
 }
 
-# Generate list of all files FIRST, then process them
-# This prevents the script from processing files it creates during execution
-echo "Scanning for files to symlink..."
-temp_file_list=$(mktemp)
+# Install Homebrew (macOS or Linux immutable)
+install_brew() {
+    command -v brew &>/dev/null && return 0
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+    # Add to PATH
+    if [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    elif [[ -x "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -x "/usr/local/bin/brew" ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+}
 
-# Find all files and write to temp file
-find "$DOTFILES_DIR" -type f -print0 | while IFS= read -r -d '' file; do
-    # Skip excluded files
-    case "$file" in
-        */.git/*|*/.git|*/.config/git/*|*/setup.sh|*/README.md|*/LICENSE)
-            echo "Excluded: $file" >&2
+# Install packages based on package manager
+install_packages() {
+    local pm="$1"
+    local base_pkgs="git zsh starship micro delta"
+    
+    case "$pm" in
+        brew)
+            install_brew
+            brew install $base_pkgs
+            if $IS_HOST && [[ "$OSTYPE" == "darwin"* ]]; then
+                brew install --cask zed 1password
+                brew install 1password-cli
+            fi
+            ;;
+        pacman)
+            sudo pacman -S --needed --noconfirm $base_pkgs
+            if $IS_HOST; then
+                echo "Install zed, 1password from AUR manually if needed"
+            fi
+            ;;
+        dnf)
+            sudo dnf install -y $base_pkgs
+            if $IS_HOST; then
+                echo "Install zed, 1password manually if needed"
+            fi
             ;;
         *)
-            echo "$file" >> "$temp_file_list"
+            red "No supported package manager found"
+            return 1
             ;;
     esac
-done
+}
 
-echo "Creating symlinks for all dotfiles..."
-while IFS= read -r source_file; do
-    [[ -z "$source_file" ]] && continue
+# Install bun
+install_bun() {
+    command -v bun &>/dev/null && { green "bun already installed"; return 0; }
+    echo "Installing bun..."
+    curl -fsSL https://bun.sh/install | bash
+    export PATH="$HOME/.bun/bin:$PATH"
+}
+
+# Create symlink safely
+link_file() {
+    local src="$1" dst="$2"
     
-    # Calculate relative path from dotfiles directory
-    relative_path="${source_file#$DOTFILES_DIR/}"
-    target_file="$HOME/$relative_path"
+    # Safety: src must be in dotfiles, dst must be in $HOME but not dotfiles
+    [[ "$src" != "$SCRIPT_DIR"/* ]] && { red "Bad source: $src"; return 1; }
+    [[ "$dst" == "$SCRIPT_DIR"* ]] && { red "Circular link: $dst"; return 1; }
+    [[ ! -e "$src" ]] && { red "Missing: $src"; return 1; }
     
-    # Create symlink with safety checks
-    create_file_symlink "$source_file" "$target_file"
-done < "$temp_file_list"
+    mkdir -p "$(dirname "$dst")"
+    
+    # Already correctly linked
+    [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]] && return 0
+    
+    # Remove existing and link
+    rm -rf "$dst"
+    ln -s "$src" "$dst"
+    echo "Linked: ${dst#$HOME/}"
+}
 
-# Clean up temp file
-rm -f "$temp_file_list"
+# Symlink all dotfiles
+link_dotfiles() {
+    echo "Linking dotfiles..."
+    
+    while IFS= read -r -d '' src; do
+        case "$src" in
+            */.git/*|*/setup.sh|*/README.md|*/LICENSE|*.new|*.sample|*_backup*) continue ;;
+        esac
+        local rel="${src#$SCRIPT_DIR/}"
+        link_file "$src" "$HOME/$rel"
+    done < <(find "$SCRIPT_DIR" -type f -print0)
+}
 
-# Host-specific configuration
-if $IS_HOST; then
-    echo "Setting up host-specific configuration..."
-    if command_exists op; then
-        op signin
-        if [[ -f "$HOME/.continue/config.yaml.sample" ]]; then
-            op inject -f -i "$HOME/.continue/config.yaml.sample" -o "$HOME/.continue/config.yaml"
-        fi
-    else
-        echo "Warning: 1Password CLI not found, skipping config injection"
+# Set zsh as default shell
+set_default_shell() {
+    local zsh_path=$(which zsh)
+
+    # Already using zsh
+    [[ "$SHELL" == *"zsh"* ]] && { green "zsh is already default shell"; return 0; }
+
+    # Verify zsh is installed
+    [[ -z "$zsh_path" ]] && { red "zsh not found"; return 1; }
+
+    echo "Setting zsh as default shell..."
+
+    # Add to /etc/shells if not present (Linux)
+    if [[ "$OSTYPE" == "linux-gnu"* ]] && [[ -f /etc/shells ]]; then
+        grep -q "$zsh_path" /etc/shells || echo "$zsh_path" | sudo tee -a /etc/shells
     fi
-fi
 
-echo "Setup complete!"
-echo "Please restart your shell or run 'source ~/.zshrc' to apply changes."
+    # Use appropriate method based on system
+    if command -v chsh &>/dev/null; then
+        chsh -s "$zsh_path"
+    elif command -v lchsh &>/dev/null; then
+        # Immutable distros (Bazzite, Aurora, Silverblue)
+        echo "$zsh_path" | sudo lchsh "$USER"
+    elif command -v usermod &>/dev/null; then
+        sudo usermod --shell "$zsh_path" "$USER"
+    else
+        red "No method available to change shell"
+        echo "Configure your terminal emulator to launch zsh instead"
+        return 1
+    fi
+
+    green "Default shell changed to zsh (restart terminal to apply)"
+}
+
+
+# Host-specific setup (1Password injection)
+
+# Configure 1Password SSH signing for git
+setup_git_signing() {
+    local op_ssh_sign=""
+    
+    # Find op-ssh-sign binary
+    if [[ -x "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" ]]; then
+        op_ssh_sign="/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+    elif [[ -x "/opt/1Password/op-ssh-sign" ]]; then
+        op_ssh_sign="/opt/1Password/op-ssh-sign"
+    elif command -v op-ssh-sign &>/dev/null; then
+        op_ssh_sign="$(which op-ssh-sign)"
+    fi
+    
+    if [[ -n "$op_ssh_sign" ]]; then
+        git config --global gpg.ssh.program "$op_ssh_sign"
+        green "Git SSH signing configured: $op_ssh_sign"
+    else
+        echo "1Password SSH signing not found - skipping git signing setup"
+    fi
+}
+setup_host() {
+    $IS_HOST || return 0
+    command -v op &>/dev/null || { echo "1Password CLI not found"; return 0; }
+    
+    echo "Setting up host config..."
+    op signin
+}
+
+# Main
+main() {
+    [[ "$HOME" == "$SCRIPT_DIR"* ]] && { red "Cannot run from inside HOME"; exit 1; }
+    
+    local pm=$(detect_pm)
+    echo "Detected package manager: $pm"
+    
+    install_packages "$pm"
+    install_bun
+    set_default_shell
+    link_dotfiles
+    setup_git_signing
+    setup_host
+    
+    green "Setup complete! Run 'source ~/.zshrc' to apply changes."
+}
+
+main
