@@ -37,6 +37,13 @@ znap source zdharma-continuum/fast-syntax-highlighting
 znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
 
+# After the znap source line
+function zle-line-init zle-keymap-select {
+  echo -ne '\e[1 q'  # always blinking block
+}
+zle -N zle-line-init
+zle -N zle-keymap-select
+
 # =============================================================================
 # Tool Initialization (only if installed)
 # =============================================================================
