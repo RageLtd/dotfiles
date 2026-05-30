@@ -20,8 +20,6 @@ path=(
     $HOME/.cache/.bun/bin
     $HOME/.local/bin
     $HOME/.opencode/bin
-    $HOME/.lmstudio/bin
-    $HOME/.moose/bin
     $HOME/bin
     $path
 )
@@ -42,7 +40,6 @@ znap source zsh-users/zsh-autosuggestions
 # =============================================================================
 # Tool Initialization (only if installed)
 # =============================================================================
-command -v rbenv &>/dev/null && znap eval rbenv 'rbenv init -'
 command -v starship &>/dev/null && { znap eval starship 'starship init zsh --print-full-init'; znap prompt; }
 
 # Bun completions
@@ -53,4 +50,3 @@ command -v starship &>/dev/null && { znap eval starship 'starship init zsh --pri
 # =============================================================================
 export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
 export APOLLO_TELEMETRY_DISABLED=true
-export CLICKHOUSE_DATABASE=data_services
