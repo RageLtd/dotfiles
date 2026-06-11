@@ -14,6 +14,9 @@ elif [[ -x "/usr/local/bin/brew" ]]; then
     eval "$(/usr/local/bin/brew shellenv)"
 fi
 
+# Cargo
+. "$HOME/.cargo/env"
+
 # User paths
 path=(
     $HOME/.bun/bin
@@ -29,7 +32,7 @@ path=(
 # =============================================================================
 [[ -r ~/.znap/znap.zsh ]] ||
     git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.znap
-source ~/.znap/znap.zsh
+source $HOME/.znap/znap.zsh
 zstyle ':znap:*' repos-dir ~/.znap/repos
 
 znap source mattmc3/zephyr plugins/{color,completion,directory,editor,environment,history,utility}
@@ -38,11 +41,15 @@ znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
 
 # After the znap source line
-function zle-line-init zle-keymap-select {
-  echo -ne '\e[1 q'  # always blinking block
-}
+zle-line-init() { print -Pn '\e[1 q'; }
 zle -N zle-line-init
-zle -N zle-keymap-select
+
+zle-keymap-select() {
+  case $KEYMAP in
+    vicmd|visual) print -Pn '\e[1 q' ;;
+    *)            print -Pn '\e[1 q' ;;
+  esac
+}
 
 # =============================================================================
 # Tool Initialization (only if installed)
@@ -57,3 +64,15 @@ command -v starship &>/dev/null && { znap eval starship 'starship init zsh --pri
 # =============================================================================
 export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
 export APOLLO_TELEMETRY_DISABLED=true
+export HOMEBREW_NO_ENV_HINTS=1
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# opencode
+export PATH=$HOME/.opencode/bin:$PATH
+
+
+# >>> railway initialize >>>
+source "$HOME/.railway/env"
+# <<< railway initialize <<<
