@@ -41,7 +41,7 @@ install_brew() {
 # Install packages based on system type
 install_packages() {
     local system="$1"
-    local base_pkgs="git zsh nushell starship micro delta chezmoi"
+    local base_pkgs="git zsh nushell starship micro git-delta chezmoi"
 
     case "$system" in
         macos)
