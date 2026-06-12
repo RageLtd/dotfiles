@@ -41,7 +41,7 @@ install_brew() {
 # Install packages based on system type
 install_packages() {
     local system="$1"
-    local base_pkgs="git zsh nushell starship micro delta"
+    local base_pkgs="git zsh nushell starship micro delta chezmoi"
 
     case "$system" in
         macos)
@@ -118,37 +118,41 @@ set_default_shell() {
     green "Default shell changed to nushell (restart terminal to apply)"
 }
 
-# Convention: directories → XDG_CONFIG_HOME, root files → HOME
-link_dotfiles() {
-    echo "Linking dotfiles..."
+# Remove symlinks created by the pre-chezmoi version of this script
+cleanup_legacy_links() {
+    local links=(
+        "$HOME/.zshrc"
+        "$HOME/.gitconfig"
+        "$XDG_CONFIG_HOME/1Password"
+        "$XDG_CONFIG_HOME/ghostty"
+        "$XDG_CONFIG_HOME/nushell"
+        "$XDG_CONFIG_HOME/nvim"
+        "$XDG_CONFIG_HOME/zed"
+    )
 
-    local skip=("setup.sh" "README.md" "LICENSE" ".git" ".gitignore" ".DS_store")
-
-    for item in "$SCRIPT_DIR"/* "$SCRIPT_DIR"/.[!.]*; do
-        [[ ! -e "$item" ]] && continue
-        local name="$(basename "$item")"
-
-        local should_skip=false
-        for s in "${skip[@]}"; do
-            [[ "$name" == "$s" ]] && { should_skip=true; break; }
-        done
-        $should_skip && continue
-
-        if [[ -d "$item" ]]; then
-            local dst="$XDG_CONFIG_HOME/$name"
-            [[ -L "$dst" && "$(readlink "$dst")" == "$item" ]] && continue
-            mkdir -p "$XDG_CONFIG_HOME"
-            rm -rf "$dst"
-            ln -s "$item" "$dst"
-            echo "Linked: $name → $dst"
-        elif [[ -f "$item" ]]; then
-            local dst="$HOME/$name"
-            [[ -L "$dst" && "$(readlink "$dst")" == "$item" ]] && continue
-            rm -f "$dst"
-            ln -s "$item" "$dst"
-            echo "Linked: $name → $dst"
+    for l in "${links[@]}"; do
+        if [[ -L "$l" && "$(readlink "$l")" == "$SCRIPT_DIR"* ]]; then
+            rm "$l"
+            echo "Removed legacy symlink: $l"
         fi
     done
+}
+
+# macOS: chezmoi manages ~/Library/Application Support/nushell as a symlink
+# to ~/.config/nushell; move any pre-existing real directory aside
+migrate_macos_nushell() {
+    [[ "$OSTYPE" != "darwin"* ]] && return 0
+
+    local d="$HOME/Library/Application Support/nushell"
+    if [[ -d "$d" && ! -L "$d" ]]; then
+        mv "$d" "${d}.pre-chezmoi"
+        echo "Moved aside pre-chezmoi nushell dir: ${d}.pre-chezmoi"
+    fi
+}
+
+apply_dotfiles() {
+    echo "Applying dotfiles with chezmoi..."
+    chezmoi init --source "$SCRIPT_DIR" --apply
 }
 
 # Remove macOS Library configs that shadow XDG paths
@@ -168,26 +172,6 @@ cleanup_macos_shadows() {
     done
 }
 
-# Configure 1Password SSH signing for git
-setup_git_signing() {
-    local op_ssh_sign=""
-
-    if [[ -x "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" ]]; then
-        op_ssh_sign="/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
-    elif [[ -x "/opt/1Password/op-ssh-sign" ]]; then
-        op_ssh_sign="/opt/1Password/op-ssh-sign"
-    elif command -v op-ssh-sign &>/dev/null; then
-        op_ssh_sign="$(which op-ssh-sign)"
-    fi
-
-    if [[ -n "$op_ssh_sign" ]]; then
-        git config --global gpg.ssh.program "$op_ssh_sign"
-        green "Git SSH signing configured: $op_ssh_sign"
-    else
-        echo "1Password SSH signing not found - skipping git signing setup"
-    fi
-}
-
 main() {
     local system=$(detect_system)
     echo "Detected system: $system"
@@ -195,9 +179,10 @@ main() {
     install_packages "$system"
     install_bun
     set_default_shell
-    link_dotfiles
+    cleanup_legacy_links
     cleanup_macos_shadows
-    setup_git_signing
+    migrate_macos_nushell
+    apply_dotfiles
 
     green "Setup complete!"
 }

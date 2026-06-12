@@ -2,7 +2,7 @@
 	format = ssh
 [commit]
 	gpgsign = true
-	template = $HOME/.stCommitMsg
+	template = {{ .chezmoi.homeDir }}/.stCommitMsg
 [user]
 	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFYYXTvcmOhotsCanioNrhSpXztzF3Bu9T+f6G1d8IKR
 	name = RageLtd
@@ -13,7 +13,7 @@
 	autoSetupRemote = true
 [core]
 	pager = delta
-	excludesfile = $HOME/.gitignore_global
+	excludesfile = {{ .chezmoi.homeDir }}/.gitignore_global
 [interactive]
 	diffFilter = delta --color-only
 [delta]
@@ -34,3 +34,9 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[gpg "ssh"]
+{{- if eq .chezmoi.os "darwin" }}
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+{{- else }}
+	program = /opt/1Password/op-ssh-sign
+{{- end }}

@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal dotfiles for macOS and Linux (including immutable distros like Bazzite/Aurora).
+Personal dotfiles for macOS and Linux (including immutable distros like Bazzite/Aurora), managed with [chezmoi](https://www.chezmoi.io/).
 
 ## Quick Start
 
@@ -10,13 +10,31 @@ cd ~/dotfiles
 ./setup.sh
 ```
 
+## How It Works
+
+chezmoi uses this repo as its source directory (`sourceDir` is pinned by
+`.chezmoi.toml.tmpl` on init) and runs in **symlink mode**: plain files are
+symlinked into place, so editing a live config edits the repo directly.
+Templates (`*.tmpl`) are rendered to real files — re-run `chezmoi apply`
+after editing those.
+
+Cross-platform handling lives in the source state, not in scripts:
+
+- `dot_config/*` → `~/.config/*` on every OS
+- `Library/Application Support/symlink_nushell.tmpl` → on macOS, points
+  nushell's native config/data dir at `~/.config/nushell` (ignored on Linux
+  via `.chezmoiignore`)
+- `dot_gitconfig.tmpl` → picks the right 1Password `op-ssh-sign` path per OS
+
 ## What's Included
 
-- **zsh** - Shell config with Znap plugin manager, Starship prompt
+- **nushell** - Shell config, Starship prompt
+- **zsh** - Fallback shell config with Znap plugin manager
 - **git** - Config with delta diff viewer, SSH signing via 1Password
 - **ghostty** - Terminal config and themes
 - **zed** - Editor settings and keymaps
-- **claude code** - CLAUDE.md instructions and settings
+- **nvim** - LazyVim-based config
+- **1Password** - SSH agent config
 
 ## Supported Systems
 
@@ -29,26 +47,36 @@ cd ~/dotfiles
 
 ## Installed Packages
 
-`git`, `zsh`, `starship`, `micro`, `delta`, `bun`, `1password`, `tidal`, `discord`, `signal`, `zed`, `font-hack-nerd-font`
+`git`, `zsh`, `nushell`, `starship`, `micro`, `delta`, `chezmoi`, `bun`, `1password`, `signal`, `zed`, `font-hack-nerd-font`
 
 ## Structure
 
 ```
-dotfiles/
-├── .claude/           # Claude Code config
-├── .config/
-│   ├── ghostty/       # Terminal config + themes
-│   ├── zed/           # Editor settings
-│   └── 1Password/     # SSH agent config
-├── .gitconfig         # Git configuration
-├── .zshrc             # Shell configuration
-├── CLAUDE.md          # Claude Code instructions
-└── setup.sh           # Installation script
+dotfiles/                          # chezmoi source directory
+├── .chezmoi.toml.tmpl             # chezmoi config (symlink mode)
+├── .chezmoiignore                 # per-OS exclusions
+├── dot_config/
+│   ├── 1Password/                 # SSH agent config
+│   ├── ghostty/                   # Terminal config + themes
+│   ├── nushell/                   # Shell config
+│   ├── nvim/                      # Editor config
+│   └── zed/                       # Editor settings
+├── Library/Application Support/   # macOS-only nushell symlink
+├── dot_gitconfig.tmpl             # Git configuration (templated per OS)
+├── dot_zshrc                      # Fallback shell configuration
+└── setup.sh                       # Installation script
 ```
+
+## Day-to-Day
+
+- Edit a symlinked config (zed, nushell, nvim, …): changes land in the repo
+  immediately — just commit.
+- Edit a template (`dot_gitconfig.tmpl`): run `chezmoi apply` to re-render.
+- `chezmoi status` shows drift (e.g. an app replaced a symlink with a real
+  file on save); `chezmoi re-add <file>` absorbs it back into the repo.
 
 ## Post-Install
 
-1. Restart your terminal (or `source ~/.zshrc`)
+1. Restart your terminal
 2. On immutable distros: reboot to complete 1Password install
-3. Znap will auto-install plugins on first shell launch
-4. Sign into 1Password to enable SSH agent
+3. Sign into 1Password to enable SSH agent

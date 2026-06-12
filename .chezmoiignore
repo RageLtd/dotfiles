@@ -1,0 +1,12 @@
+README.md
+LICENSE
+setup.sh
+
+# Runtime data that must never be deployed from the repo
+.config/nushell/history.txt
+.config/nushell/vendor
+.config/zed/prompts
+
+{{ if ne .chezmoi.os "darwin" }}
+Library
+{{ end }}
