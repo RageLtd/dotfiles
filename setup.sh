@@ -122,7 +122,7 @@ set_default_shell() {
 link_dotfiles() {
     echo "Linking dotfiles..."
 
-    local skip=("setup.sh" "README.md" "LICENSE" ".git" ".gitignore")
+    local skip=("setup.sh" "README.md" "LICENSE" ".git" ".gitignore" ".DS_store")
 
     for item in "$SCRIPT_DIR"/* "$SCRIPT_DIR"/.[!.]*; do
         [[ ! -e "$item" ]] && continue
