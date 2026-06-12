@@ -42,8 +42,9 @@ Cross-platform handling lives in the source state, not in scripts:
 |----------|-----------------|-----------|
 | macOS | Homebrew | brew cask |
 | Bazzite/Aurora/Silverblue | Homebrew + rpm-ostree | rpm-ostree |
-| Arch/Manjaro | pacman | AUR |
+| Arch/Manjaro | paru (pacman + AUR) | AUR |
 | Fedora/RHEL | dnf | manual |
+| Ubuntu/DGX OS | apt + upstream installers | skipped (SSH agent forwarding) |
 
 ## Installed Packages
 

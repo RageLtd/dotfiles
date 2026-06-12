@@ -18,6 +18,8 @@ detect_system() {
         echo "arch"
     elif command -v dnf &>/dev/null; then
         echo "fedora"
+    elif command -v apt-get &>/dev/null; then
+        echo "debian"  # Ubuntu, DGX OS
     else
         echo "unknown"
     fi
@@ -75,6 +77,39 @@ install_packages() {
         fedora)
             sudo dnf install -y $base_pkgs
             echo "Install 1password and signal manually or via Flatpak"
+            ;;
+        debian)
+            # Ubuntu/DGX OS (often aarch64, so no linuxbrew); CLI-only:
+            # GUI apps and 1Password are skipped - SSH agent forwarding
+            # covers auth and commit signing on these machines
+            sudo apt-get update
+            sudo apt-get install -y git zsh micro curl
+
+            export PATH="$HOME/.local/bin:$PATH"
+
+            if ! command -v nu &>/dev/null; then
+                echo "Installing nushell via apt.fury.io repo..."
+                sudo install -d /etc/apt/keyrings
+                curl -fsSL https://apt.fury.io/nushell/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/fury-nushell.gpg
+                echo "deb [signed-by=/etc/apt/keyrings/fury-nushell.gpg] https://apt.fury.io/nushell/ /" | sudo tee /etc/apt/sources.list.d/fury-nushell.list
+                sudo apt-get update && sudo apt-get install -y nushell
+            fi
+
+            command -v starship &>/dev/null || curl -sS https://starship.rs/install.sh | sh -s -- -y
+            command -v chezmoi &>/dev/null || sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+
+            if ! command -v delta &>/dev/null; then
+                echo "Installing git-delta from GitHub release..."
+                local deb_arch=$(dpkg --print-architecture)
+                local delta_url=$(curl -fsSL https://api.github.com/repos/dandavison/delta/releases/latest \
+                    | grep -o "https://[^\"]*git-delta_[^\"]*_${deb_arch}\.deb" | head -1)
+                if [[ -n "$delta_url" ]]; then
+                    curl -fsSL "$delta_url" -o /tmp/git-delta.deb
+                    sudo dpkg -i /tmp/git-delta.deb && rm -f /tmp/git-delta.deb
+                else
+                    red "No git-delta .deb found for $deb_arch - install manually"
+                fi
+            fi
             ;;
         *)
             red "Unknown system type"
