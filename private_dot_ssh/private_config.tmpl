@@ -7,7 +7,7 @@
 # forwarding works even when SSH_AUTH_SOCK isn't set.
 # Note: 172.16/12 is deliberately omitted — it can't be globbed without
 # also matching public 172.x addresses.
-Host *.ts.net *.local 192.168.*.* 10.*.*.*
+Host *.ts.net *.local *.lan 192.168.*.* 10.*.*.*
 	ForwardAgent "{{ $agentSock }}"
 
 Host *
