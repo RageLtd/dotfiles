@@ -64,15 +64,5 @@ command -v starship &>/dev/null && { znap eval starship 'starship init zsh --pri
 # =============================================================================
 export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
 export APOLLO_TELEMETRY_DISABLED=true
-export HOMEBREW_NO_ENV_HINTS=1
-
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# opencode
-export PATH=$HOME/.opencode/bin:$PATH
-
-
-# >>> railway initialize >>>
-source "$HOME/.railway/env"
-# <<< railway initialize <<<
+export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
+. "$HOME/.cargo/env"
