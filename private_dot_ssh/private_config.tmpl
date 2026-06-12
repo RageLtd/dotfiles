@@ -1,0 +1,14 @@
+{{- $agentSock := printf "%s/.1password/agent.sock" .chezmoi.homeDir -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{- $agentSock = printf "%s/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" .chezmoi.homeDir -}}
+{{- end -}}
+# Forward the 1Password agent only to trusted networks: tailnet hosts
+# (MagicDNS FQDNs) and LAN addresses. The explicit socket path means
+# forwarding works even when SSH_AUTH_SOCK isn't set.
+# Note: 172.16/12 is deliberately omitted — it can't be globbed without
+# also matching public 172.x addresses.
+Host *.ts.net *.local 192.168.*.* 10.*.*.*
+	ForwardAgent "{{ $agentSock }}"
+
+Host *
+	IdentityAgent "{{ $agentSock }}"

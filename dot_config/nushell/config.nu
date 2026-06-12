@@ -26,6 +26,15 @@ $env.PATH = ($env.PATH | prepend [
     '/opt/homebrew/opt/rustup/bin'
 ])
 
+# 1Password SSH agent (Linux socket first, then macOS)
+let op_sock = ([
+    ($nu.home-dir | path join ".1password/agent.sock")
+    ($nu.home-dir | path join "Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock")
+] | where {|it| $it | path exists } | get 0?)
+if $op_sock != null {
+    $env.SSH_AUTH_SOCK = $op_sock
+}
+
 $env.config.highlight_resolved_externals = true
 
 $env.config.buffer_editor = "zed"
