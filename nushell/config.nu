@@ -30,3 +30,6 @@ $env.config.highlight_resolved_externals = true
 
 $env.config.buffer_editor = "zed"
 $env.config.show_banner = "short"
+
+mkdir ($nu.data-dir | path join "vendor/autoload")
+starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")
