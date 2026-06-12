@@ -38,6 +38,16 @@ install_brew() {
     fi
 }
 
+# Install paru AUR helper (Arch only)
+install_paru() {
+    command -v paru &>/dev/null && return 0
+    echo "Installing paru..."
+    sudo pacman -S --needed --noconfirm base-devel git
+    git clone https://aur.archlinux.org/paru-bin.git /tmp/paru-bin
+    (cd /tmp/paru-bin && makepkg -si --noconfirm)
+    rm -rf /tmp/paru-bin
+}
+
 # Install packages based on system type
 install_packages() {
     local system="$1"
@@ -59,17 +69,8 @@ install_packages() {
             fi
             ;;
         arch)
-            sudo pacman -S --needed --noconfirm $base_pkgs
-
-            if ! command -v paru &>/dev/null; then
-                echo "Installing paru..."
-                sudo pacman -S --needed --noconfirm base-devel git
-                git clone https://aur.archlinux.org/paru-bin.git /tmp/paru-bin
-                cd /tmp/paru-bin && makepkg -si --noconfirm
-                cd - && rm -rf /tmp/paru-bin
-            fi
-
-            paru -S --needed --noconfirm 1password signal-desktop zed ttf-hack-nerd
+            install_paru
+            paru -S --needed --noconfirm $base_pkgs 1password signal-desktop zed ttf-hack-nerd
             ;;
         fedora)
             sudo dnf install -y $base_pkgs
