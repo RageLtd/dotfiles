@@ -1,4 +1,9 @@
 {
+  "language_models": {
+    "ollama": {
+      "api_url": "https://ollama.com",
+    },
+  },
   "cli_default_open_behavior": "new_window",
   "diff_view_style": "unified",
   "outline_panel": {
@@ -71,41 +76,31 @@
     },
   },
   "agent_servers": {
+    "Mimir": {
+      "favorite_config_option_values": {
+        "model": [
+          "ollama-cloud/glm-5.1",
+          "ollama-cloud/minimax-m3",
+          "ollama-cloud/kimi-k2.7-code"
+        ]
+      },
+      "default_config_options": {
+        "model": "ollama-cloud/glm-5.1"
+      },
+      "type": "custom",
+      "command": "bun",
+      "args": ["run", "/Users/rageltd/Projects/mimir/packages/acp/index.ts"],
+      "env": {
+        "MIMIR_SERVER_URL": "http://mimir.conhost.lan",
+      },
+    },
     "codex-acp": {
       "type": "registry",
     },
     "claude-acp": {
       "type": "registry",
     },
-    "mimir-acp": {
-      "default_config_options": {
-        "model": "claude-code/opus-4-6-1m",
-      },
-      "favorite_config_option_values": {
-        "model": [
-          "Qwen/Qwen3.5-397B-A17B-TEE",
-          "glm-5.1",
-          "minimax-m2.7",
-          "claude-code/opus-4-6-1m",
-          "glm-5p1",
-          "accounts/fireworks/models/deepseek-v4-pro",
-          "gemini-3.1-pro",
-          "codex/gpt-5.5",
-        ],
-      },
-      "default_model": "claude-code/default",
-      "type": "custom",
-      "command": "bun",
-      "args": ["/Users/rageltd/Projects/mimir/packages/acp/index.ts"],
-      "env": {
-        "MIMIR_SERVER_URL": "http://mimir.conhost.lan",
-        "MIMIR_CARTOGRAPHER_BIN": "/Users/rageltd/Projects/cartographer/target/release/cartographer",
-      },
-    },
     "opencode": {
-      "favorite_config_option_values": {
-        "model": ["opencode-go/qwen3.6-plus"],
-      },
       "type": "registry",
     },
   },
@@ -120,7 +115,7 @@
     },
     "cartographer": {
       "enabled": false,
-      "command": "/Users/rageltd/Projects/cartographer/target/release/cartographer",
+      "command": "cartographer",
       /// The arguments to pass to the MCP server
       "args": [],
       /// The environment variables to set
@@ -134,7 +129,7 @@
       },
     },
   },
-  "icon_theme": "Bearded Icon Theme",
+  "icon_theme": "Bearded Icons",
   "theme": "Bearded Theme Monokai Black",
   "base_keymap": "VSCode",
   "terminal": {

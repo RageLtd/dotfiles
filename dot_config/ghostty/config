@@ -43,4 +43,7 @@
 # resize-overlay-duration = 4s 200ms
 font-family = Hack Nerd Font Mono
 theme = bearded-monokai-black
+cursor-style = block
+cursor-style-blink = true
+shell-integration-features = no-cursor
 
