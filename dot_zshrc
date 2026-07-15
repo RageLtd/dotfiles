@@ -36,7 +36,6 @@ source $HOME/.znap/znap.zsh
 zstyle ':znap:*' repos-dir ~/.znap/repos
 
 znap source mattmc3/zephyr plugins/{color,completion,directory,editor,environment,history,utility}
-znap source zdharma-continuum/fast-syntax-highlighting
 znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
 
@@ -71,3 +70,11 @@ fi
 export APOLLO_TELEMETRY_DISABLED=true
 export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
 . "$HOME/.cargo/env"
+
+[[ -f ~/.secrets ]] && source ~/.secrets
+
+# =============================================================================
+# Syntax Highlighting (must be at end of .zshrc)
+# =============================================================================
+autoload -Uz add-zsh-hook
+eval "$(zsh-patina activate)"

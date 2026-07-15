@@ -58,12 +58,14 @@ install_packages() {
     case "$system" in
         macos)
             install_brew
-            brew install $base_pkgs
+            brew tap michel-kraemer/zsh-patina
+            brew install $base_pkgs zsh-patina
             brew install --cask 1password signal zed font-hack-nerd-font
             ;;
         immutable)
             install_brew
-            brew install $base_pkgs signal zed font-hack-nerd-font
+            brew tap michel-kraemer/zsh-patina
+            brew install $base_pkgs zsh-patina signal zed font-hack-nerd-font
 
             if ! rpm -q 1password &>/dev/null; then
                 echo "Installing 1Password via rpm-ostree (requires reboot)..."
@@ -72,7 +74,7 @@ install_packages() {
             ;;
         arch)
             install_paru
-            paru -S --needed --noconfirm $base_pkgs 1password signal-desktop zed ttf-hack-nerd
+            paru -S --needed --noconfirm $base_pkgs zsh-patina-git 1password signal-desktop zed ttf-hack-nerd
             ;;
         fedora)
             sudo dnf install -y $base_pkgs
@@ -126,32 +128,32 @@ install_bun() {
     export PATH="$HOME/.bun/bin:$PATH"
 }
 
-# Set nushell as default shell
+# Set zsh as default shell
 set_default_shell() {
-    local nu_path=$(which nu)
+    local zsh_path=$(which zsh)
 
-    [[ "$SHELL" == *"nu"* ]] && { green "nushell is already default shell"; return 0; }
-    [[ -z "$nu_path" ]] && { red "nushell not found"; return 1; }
+    [[ "$SHELL" == *"zsh"* ]] && { green "zsh is already default shell"; return 0; }
+    [[ -z "$zsh_path" ]] && { red "zsh not found"; return 1; }
 
-    echo "Setting nushell as default shell..."
+    echo "Setting zsh as default shell..."
 
     if [[ -f /etc/shells ]]; then
-        grep -q "$nu_path" /etc/shells || echo "$nu_path" | sudo tee -a /etc/shells
+        grep -q "$zsh_path" /etc/shells || echo "$zsh_path" | sudo tee -a /etc/shells
     fi
 
     if command -v chsh &>/dev/null; then
-        chsh -s "$nu_path"
+        chsh -s "$zsh_path"
     elif command -v lchsh &>/dev/null; then
-        echo "$nu_path" | sudo lchsh "$USER"
+        echo "$zsh_path" | sudo lchsh "$USER"
     elif command -v usermod &>/dev/null; then
-        sudo usermod --shell "$nu_path" "$USER"
+        sudo usermod --shell "$zsh_path" "$USER"
     else
         red "No method available to change shell"
-        echo "Configure your terminal emulator to launch nu instead"
+        echo "Configure your terminal emulator to launch zsh instead"
         return 1
     fi
 
-    green "Default shell changed to nushell (restart terminal to apply)"
+    green "Default shell changed to zsh (restart terminal to apply)"
 }
 
 # Remove symlinks created by the pre-chezmoi version of this script

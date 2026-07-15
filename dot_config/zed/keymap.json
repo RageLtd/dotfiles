@@ -1,9 +1,0 @@
-[
-  {
-    "context": "Terminal",
-    "bindings": {
-      "shift-enter": ["terminal::SendText", "\u001b\r"],
-      "alt-t": ["terminal::SendText", "\u001bt"],
-    },
-  },
-]

@@ -18,10 +18,12 @@
 #     config nu --doc | nu-highlight | less -R
 
 $env.PATH = ($env.PATH | prepend [
+    ($nu.home-dir | path join '.orbstack/bin')
     ($nu.home-dir | path join '.cargo/bin')
     ($nu.home-dir | path join '.bun/bin')
     ($nu.home-dir | path join '.local/bin')
     ($nu.home-dir | path join '.opencode/bin')
+    ($nu.home-dir | path join '.railway/bin')
     '/opt/homebrew/bin'
     '/opt/homebrew/opt/rustup/bin'
 ])
@@ -40,6 +42,22 @@ $env.config.buffer_editor = "zed"
 $env.config.show_banner = "short"
 $env.EDITOR = "nvim"
 $env.VISUAL = "zed"
+
+def --env source-env-file [path: string] {
+    let expanded = ($path | path expand)
+    if ($expanded | path exists) {
+        open $expanded
+        | lines
+        | where { |l| $l !~ '^\s*#' and $l !~ '^\s*$' }
+        | parse "{key}={value}"
+        | update value { |r| $r.value | str trim -c '"' | str trim -c "'" }
+        | reduce -f {} { |it, acc| $acc | merge { ($it.key): $it.value } }
+        | load-env
+    }
+}
+
+source-env-file "~/.secrets"
+source-env-file "~/.railway/env"
 
 mkdir ($nu.data-dir | path join "vendor/autoload")
 starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")

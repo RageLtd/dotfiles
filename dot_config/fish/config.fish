@@ -18,6 +18,7 @@ end
 # Editors
 set -gx EDITOR nvim
 set -gx VISUAL zed
+set -gx MIMIR_API_KEY jVdVNQSsQjiEVuakwoChcPOiPLXKWLBFWFOptpSbweKCOdKXyxycRTegKYUXCtYP
 
 # Misc
 set -gx APOLLO_TELEMETRY_DISABLED true
@@ -47,3 +48,7 @@ set fish_color_search_match --background=444444
 
 # Starship prompt
 starship init fish | source
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init2.fish 2>/dev/null || :
