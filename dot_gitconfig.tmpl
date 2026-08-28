@@ -27,6 +27,8 @@
 	hunk-header-style = file line-number syntax
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
+[credential "https://git.rageltd.ca"]
+	helper = {{ .chezmoi.homeDir }}/.local/bin/git-credential-op-forgejo
 [init]
 	defaultBranch = main
 [filter "lfs"]
