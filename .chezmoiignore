@@ -3,6 +3,7 @@ LICENSE
 setup.sh
 
 # Runtime data that must never be deployed from the repo
+.config/fish/secrets.fish
 .config/nushell/history.txt
 .config/nushell/vendor
 .config/zed/prompts

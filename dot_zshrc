@@ -5,18 +5,6 @@
 # =============================================================================
 typeset -U PATH  # Deduplicate PATH entries
 
-# Homebrew (macOS or Linux)
-if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-elif [[ -x "/usr/local/bin/brew" ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-fi
-
-# Cargo
-. "$HOME/.cargo/env"
-
 # User paths
 path=(
     $HOME/.bun/bin
@@ -34,6 +22,15 @@ path=(
     git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.znap
 source $HOME/.znap/znap.zsh
 zstyle ':znap:*' repos-dir ~/.znap/repos
+
+# Homebrew (macOS or Linux) — output is static per prefix, so cache it
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    znap eval brew '/opt/homebrew/bin/brew shellenv'
+elif [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+    znap eval brew '/home/linuxbrew/.linuxbrew/bin/brew shellenv'
+elif [[ -x "/usr/local/bin/brew" ]]; then
+    znap eval brew '/usr/local/bin/brew shellenv'
+fi
 
 znap source mattmc3/zephyr plugins/{color,completion,directory,editor,environment,history,utility}
 znap source zsh-users/zsh-completions
@@ -53,7 +50,9 @@ zle-keymap-select() {
 # =============================================================================
 # Tool Initialization (only if installed)
 # =============================================================================
-command -v starship &>/dev/null && { znap eval starship 'starship init zsh --print-full-init'; znap prompt; }
+
+# direnv setup
+znap eval direnv "$(direnv hook zsh)"
 
 # Bun completions
 [[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
@@ -73,8 +72,23 @@ export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
 
 [[ -f ~/.secrets ]] && source ~/.secrets
 
-# =============================================================================
-# Syntax Highlighting (must be at end of .zshrc)
-# =============================================================================
-autoload -Uz add-zsh-hook
-eval "$(zsh-patina activate)"
+# ==============================================================================
+# Prompt
+# ==============================================================================
+
+if (( $+commands[starship] )); then
+    znap eval starship 'starship init zsh --print-full-init'
+fi
+
+# ==============================================================================
+# Syntax Highlighting
+# ==============================================================================
+
+# Patina must remain at the end of this file.
+if (( $+commands[zsh-patina] )); then
+    znap eval zsh-patina 'zsh-patina activate'
+fi
+
+# >>> railway initialize >>>
+source "$HOME/.railway/env"
+# <<< railway initialize <<<

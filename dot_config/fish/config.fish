@@ -18,10 +18,12 @@ end
 # Editors
 set -gx EDITOR nvim
 set -gx VISUAL zed
-set -gx MIMIR_API_KEY jVdVNQSsQjiEVuakwoChcPOiPLXKWLBFWFOptpSbweKCOdKXyxycRTegKYUXCtYP
 
 # Misc
 set -gx APOLLO_TELEMETRY_DISABLED true
+
+# Secrets live outside the repo (chezmoi-ignored) — API keys and the like go there
+test -f ~/.config/fish/secrets.fish; and source ~/.config/fish/secrets.fish
 
 set fish_greeting
 
@@ -32,18 +34,18 @@ end
 set fish_cursor_default block blink
 
 # Syntax highlighting — aligned with Bearded Monokai Black
-set fish_color_command a9dc76          # green — valid commands
-set fish_color_error fc6a67            # red — invalid commands
-set fish_color_param c7c7c7            # foreground — arguments
-set fish_color_option ffd866           # yellow — flags/options
-set fish_color_quote ffd866            # yellow — quoted strings
-set fish_color_redirection 78dce8      # blue — pipes and redirects
-set fish_color_end e991e3              # magenta — statement terminators (;, &&)
-set fish_color_comment 444444          # dim — comments
-set fish_color_autosuggestion 444444   # dim — autosuggestions
-set fish_color_operator 78e8c6         # cyan — operators
-set fish_color_escape 78e8c6           # cyan — escape sequences
-set fish_color_valid_path --underline  # underline existing paths
+set fish_color_command a9dc76 # green — valid commands
+set fish_color_error fc6a67 # red — invalid commands
+set fish_color_param c7c7c7 # foreground — arguments
+set fish_color_option ffd866 # yellow — flags/options
+set fish_color_quote ffd866 # yellow — quoted strings
+set fish_color_redirection 78dce8 # blue — pipes and redirects
+set fish_color_end e991e3 # magenta — statement terminators (;, &&)
+set fish_color_comment 444444 # dim — comments
+set fish_color_autosuggestion 444444 # dim — autosuggestions
+set fish_color_operator 78e8c6 # cyan — operators
+set fish_color_escape 78e8c6 # cyan — escape sequences
+set fish_color_valid_path --underline # underline existing paths
 set fish_color_search_match --background=444444
 
 # Starship prompt
@@ -52,3 +54,8 @@ starship init fish | source
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
 source ~/.orbstack/shell/init2.fish 2>/dev/null || :
+
+# >>> railway initialize >>>
+source "$HOME/.railway/env.fish"
+# <<< railway initialize <<<
+direnv hook fish | source
