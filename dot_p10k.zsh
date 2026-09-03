@@ -23,17 +23,46 @@ typeset -g POWERLEVEL9K_PROMPT_CHAR_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=''
 # in Ghostty) rather than fixed 256-colour indexes, and follow theme changes.
 typeset -g POWERLEVEL9K_DIR_{DEFAULT,HOME,HOME_SUBFOLDER,ETC,NOT_WRITABLE}_FOREGROUND=blue
 typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=true
-typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND=green
-typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=yellow
-typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=magenta
+# Git segment in bright magenta (palette slot 13, Monokai pink), the same
+# colour Zed's terminal shows it in. Counters below use the Zed state colours
+# (added green, modified blue).
+typeset -g POWERLEVEL9K_VCS_{CLEAN,MODIFIED,UNTRACKED}_FOREGROUND=13
 typeset -g POWERLEVEL9K_VCS_CONFLICTED_FOREGROUND=red
-# Text markers for git counters instead of glyphs: ?untracked !unstaged +staged
-typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
-typeset -g POWERLEVEL9K_VCS_UNSTAGED_ICON='!'
-typeset -g POWERLEVEL9K_VCS_STAGED_ICON='+'
-typeset -g POWERLEVEL9K_VCS_STASH_ICON='*'
-typeset -g POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='⇣'
-typeset -g POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='⇡'
+# Custom git format with Nerd Font (Material Design set) glyphs: branch,
+# behind/ahead, conflicts, staged, unstaged, untracked. Deliberately omits
+# the stash count. Segment colour still follows CLEAN/MODIFIED/UNTRACKED above.
+function my_git_formatter() {
+  emulate -L zsh
+  if [[ -n $P9K_CONTENT ]]; then
+    # Non-git VCS or gitstatus unavailable; fall back to p10k's default.
+    typeset -g my_git_format=$P9K_CONTENT
+    return
+  fi
+  local res
+  local branch=${(V)VCS_STATUS_LOCAL_BRANCH}
+  (( $#branch > 32 )) && branch[13,-13]="…"
+  if [[ -n $branch ]]; then
+    res+=$'\uF126'" ${branch//\%/%%}"
+  elif [[ -n $VCS_STATUS_TAG ]]; then
+    res+="#${VCS_STATUS_TAG//\%/%%}"
+  else
+    res+="@${VCS_STATUS_COMMIT[1,8]}"
+  fi
+  (( VCS_STATUS_COMMITS_BEHIND )) && res+=" "$'\U000F0047'" ${VCS_STATUS_COMMITS_BEHIND}"
+  (( VCS_STATUS_COMMITS_AHEAD  )) && res+=" "$'\U000F005F'" ${VCS_STATUS_COMMITS_AHEAD}"
+  [[ -n $VCS_STATUS_ACTION     ]] && res+=" %F{red}${VCS_STATUS_ACTION}%f"
+  (( VCS_STATUS_NUM_CONFLICTED )) && res+=" %F{red}"$'\U000F0026'" ${VCS_STATUS_NUM_CONFLICTED}%f"
+  (( VCS_STATUS_NUM_STAGED     )) && res+=" %F{green}"$'\U000F0417'" ${VCS_STATUS_NUM_STAGED}%f"
+  (( VCS_STATUS_NUM_UNSTAGED   )) && res+=" %F{blue}"$'\U000F0028'" ${VCS_STATUS_NUM_UNSTAGED}%f"
+  (( VCS_STATUS_NUM_UNTRACKED  )) && res+=" %F{yellow}"$'\U000F02D7'" ${VCS_STATUS_NUM_UNTRACKED}%f"
+  (( VCS_STATUS_HAS_UNSTAGED == -1 )) && res+=" ─"   # dirty check skipped (huge index)
+  typeset -g my_git_format=$res
+}
+functions -M my_git_formatter 2>/dev/null
+typeset -g POWERLEVEL9K_VCS_DISABLE_GITSTATUS_FORMATTING=true   # required for the expansion below to apply
+typeset -g POWERLEVEL9K_VCS_{STAGED,UNSTAGED,UNTRACKED,CONFLICTED,COMMITS_AHEAD,COMMITS_BEHIND}_MAX_NUM=-1
+typeset -g POWERLEVEL9K_VCS_CONTENT_EXPANSION='${$((my_git_formatter()))+${my_git_format}}'
+typeset -g POWERLEVEL9K_VCS_LOADING_CONTENT_EXPANSION='${$((my_git_formatter()))+${my_git_format}}'
 typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=green
 typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND=red
 typeset -g POWERLEVEL9K_STATUS_ERROR_FOREGROUND=red
