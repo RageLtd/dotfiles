@@ -1,0 +1,88 @@
+# ~/.config/mise/config.toml — global mise config
+#
+# Per-project pins go in a mise.toml at the repo root and override these.
+# `mise use -g <tool>@<version>` edits this file; `mise up` bumps to latest
+# matching versions; `mise ls` shows what's active where.
+#
+# Short names below resolve through the mise registry (aqua first, which
+# verifies release signatures/checksums). If one doesn't resolve,
+# `mise registry | grep <name>` shows the canonical name, and
+# `"github:<owner>/<repo>"` works for anything with GitHub release binaries.
+
+[tools]
+# --- Language toolchains (core backends) ------------------------------------
+bun = "latest"
+node = "lts"
+rust = "stable"
+go = "latest"
+erlang = "latest"
+elixir = "latest"
+dotnet = "latest"           # was brew dotnet
+ruby = "latest"             # replaces rbenv
+python = "latest"           # uv still does venvs; this is just the base interpreter
+
+# --- Rust toolchain extras ---------------------------------------------------
+rust-analyzer = "latest"
+"cargo:zsh-patina" = "latest"   # was brew tap michel-kraemer/zsh-patina
+
+# --- Go / TS tooling ---------------------------------------------------------
+"go:golang.org/x/tools/gopls" = "latest"
+"github:golang-migrate/migrate" = { version = "latest", exe = "migrate" }   # brew golang-migrate
+"npm:typescript-language-server" = "latest"
+biome = "latest"
+tree-sitter = "latest"      # brew tree-sitter-cli
+
+# --- Git ---------------------------------------------------------------------
+gh = "latest"
+delta = "latest"            # brew git-delta
+lazygit = "latest"
+"pipx:git-filter-repo" = "latest"
+
+# --- CLI utilities -----------------------------------------------------------
+fd = "latest"
+ripgrep = "latest"
+fzf = "latest"
+jq = "latest"
+just = "latest"
+hyperfine = "latest"
+micro = "latest"
+neovim = "latest"
+"aqua:nushell/nushell" = "latest"
+chezmoi = "latest"
+actionlint = "latest"
+duckdb = "latest"
+uv = "latest"
+mkcert = "latest"
+caddy = "latest"
+
+# --- Cloud / k8s -------------------------------------------------------------
+awscli = "latest"
+kubectl = "latest"          # brew kubernetes-cli
+kubelogin = "latest"        # brew azure/kubelogin/kubelogin
+crane = "latest"
+lazydocker = "latest"
+"github:slingdata-io/sling-cli" = { version = "latest", exe = "sling" }   # brew slingdata-io/sling/sling
+"github:railwayapp/cli" = { version = "latest", exe = "railway" }        # replaces ~/.railway/env
+
+# --- Left in brew, on purpose ------------------------------------------------
+# azure-cli           python app with a huge dep tree; brew's bottle is the sane path
+# cmake, ffmpeg, freetds, ldns, mysql-client, mssql-tools18, postgresql@18, redis
+#                     link against or are system libraries/services; brew owns those
+# git, zsh, fish      shells and git should not depend on a version manager being active
+# gawk, grep, watch, ncdu, fswatch, microsocks, uutils-coreutils
+#                     no release binaries / not in the registry; brew is fine
+# direnv              dropped — mise [env] replaces it
+# rbenv               dropped — mise ruby replaces it
+
+[settings]
+# Read .nvmrc / .node-version / rust-toolchain.toml / .go-version / etc.
+# Opt-in per tool as of 2025.
+idiomatic_version_file_enable_tools = ["node", "rust", "go", "ruby"]
+
+# Auto-trust config under these roots; anything else prompts, like `direnv allow`.
+trusted_config_paths = ["~/Work", "~/projects"]
+
+[env]
+# Global env that used to live in .zshrc. Project-scoped env goes in each
+# repo's mise.toml [env] instead of .envrc.
+APOLLO_TELEMETRY_DISABLED = "true"

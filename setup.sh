@@ -53,7 +53,7 @@ install_paru() {
 # Install packages based on system type
 install_packages() {
     local system="$1"
-    local base_pkgs="git zsh nushell starship micro git-delta chezmoi"
+    local base_pkgs="git zsh nushell micro git-delta chezmoi mise"
 
     case "$system" in
         macos)
@@ -97,8 +97,8 @@ install_packages() {
                 sudo apt-get update && sudo apt-get install -y nushell
             fi
 
-            command -v starship &>/dev/null || curl -sS https://starship.rs/install.sh | sh -s -- -y
             command -v chezmoi &>/dev/null || sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+            command -v mise &>/dev/null || curl -fsSL https://mise.run | MISE_INSTALL_PATH="$HOME/.local/bin/mise" sh
 
             if ! command -v delta &>/dev/null; then
                 echo "Installing git-delta from GitHub release..."
@@ -193,6 +193,13 @@ apply_dotfiles() {
     chezmoi init --source "$SCRIPT_DIR" --apply
 }
 
+# Install everything pinned in ~/.config/mise/config.toml
+install_mise_tools() {
+    command -v mise &>/dev/null || { red "mise not found; skipping tool install"; return 0; }
+    echo "Installing mise-managed tools (this takes a while the first time)..."
+    mise install --yes
+}
+
 # Remove macOS Library configs that shadow XDG paths
 cleanup_macos_shadows() {
     [[ "$OSTYPE" != "darwin"* ]] && return 0
@@ -221,6 +228,7 @@ main() {
     cleanup_macos_shadows
     migrate_macos_nushell
     apply_dotfiles
+    install_mise_tools
 
     green "Setup complete!"
 }

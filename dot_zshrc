@@ -1,15 +1,27 @@
 # .zshrc - Interactive shell configuration
 
 # =============================================================================
+# Powerlevel10k instant prompt
+# =============================================================================
+# Must be the first thing in this file. Paints a cached prompt immediately so
+# nothing below blocks first input. Anything after this line that writes to
+# the terminal (echo, warnings, prompts for input) will disable it and tell
+# you which line did it.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# =============================================================================
 # PATH Configuration (consolidated)
 # =============================================================================
 typeset -U PATH  # Deduplicate PATH entries
 
-# User paths
+# User paths. Toolchains (bun, node, rust, go, erlang/elixir) are on PATH via
+# mise below, not here. ~/.cargo/bin stays for `cargo install`ed binaries
+# not managed through mise's cargo: backend.
 path=(
-    $HOME/.bun/bin
-    $HOME/.cache/.bun/bin
     $HOME/.local/bin
+    $HOME/.cargo/bin
     $HOME/.opencode/bin
     $HOME/bin
     $path
@@ -51,11 +63,12 @@ zle-keymap-select() {
 # Tool Initialization (only if installed)
 # =============================================================================
 
-# direnv setup
-znap eval direnv "$(direnv hook zsh)"
-
-# Bun completions
-[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
+# mise: toolchain versions, per-directory env (replaces direnv), tasks.
+# Shell activation rewrites PATH on cd to the real binaries — no shims.
+# Global config: ~/.config/mise/config.toml; per-project: mise.toml.
+if (( $+commands[mise] )); then
+    eval "$(mise activate zsh)"
+fi
 
 # =============================================================================
 # Environment Variables
@@ -66,19 +79,16 @@ if [[ -S "$HOME/.1password/agent.sock" ]]; then
 elif [[ -S "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ]]; then
     export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 fi
-export APOLLO_TELEMETRY_DISABLED=true
-export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
-. "$HOME/.cargo/env"
-
 [[ -f ~/.secrets ]] && source ~/.secrets
 
 # ==============================================================================
 # Prompt
 # ==============================================================================
 
-if (( $+commands[starship] )); then
-    znap eval starship 'starship init zsh --print-full-init'
-fi
+# Powerlevel10k. znap clones it into ~/.znap/repos on first run; gitstatusd
+# is fetched by p10k itself on first prompt. Segment config lives in ~/.p10k.zsh.
+znap source romkatv/powerlevel10k
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 # ==============================================================================
 # Syntax Highlighting
@@ -88,7 +98,3 @@ fi
 if (( $+commands[zsh-patina] )); then
     znap eval zsh-patina 'zsh-patina activate'
 fi
-
-# >>> railway initialize >>>
-source "$HOME/.railway/env"
-# <<< railway initialize <<<

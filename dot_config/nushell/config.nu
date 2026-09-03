@@ -23,7 +23,6 @@ $env.PATH = ($env.PATH | prepend [
     ($nu.home-dir | path join '.bun/bin')
     ($nu.home-dir | path join '.local/bin')
     ($nu.home-dir | path join '.opencode/bin')
-    ($nu.home-dir | path join '.railway/bin')
     '/opt/homebrew/bin'
     '/opt/homebrew/opt/rustup/bin'
 ])
@@ -57,7 +56,3 @@ def --env source-env-file [path: string] {
 }
 
 source-env-file "~/.secrets"
-source-env-file "~/.railway/env"
-
-mkdir ($nu.data-dir | path join "vendor/autoload")
-starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")
