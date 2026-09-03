@@ -1,4 +1,6 @@
 {
+  "agent_ui_font_family": "Hack Nerd Font",
+  "agent_buffer_font_family": "Hack Nerd Font",
   "language_models": {
     "ollama": {
       "api_url": "https://ollama.com",
@@ -198,7 +200,7 @@
   },
   "ui_font_size": 18,
   "buffer_font_size": 14,
-  "buffer_font_family": "Hack Nerd Font Mono",
+  "buffer_font_family": "Hack Nerd Font",
   "inline_code_actions": true,
   "git": {
     "git_gutter": "tracked_files",
