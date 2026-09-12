@@ -63,6 +63,7 @@ crane = "latest"
 lazydocker = "latest"
 "github:slingdata-io/sling-cli" = { version = "latest", exe = "sling" }   # brew slingdata-io/sling/sling
 "github:railwayapp/cli" = { version = "latest", exe = "railway" }        # replaces ~/.railway/env
+opencode = "latest"
 
 # --- Left in brew, on purpose ------------------------------------------------
 # azure-cli           python app with a huge dep tree; brew's bottle is the sane path

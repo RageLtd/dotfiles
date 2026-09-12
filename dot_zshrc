@@ -95,6 +95,12 @@ znap source romkatv/powerlevel10k
 # ==============================================================================
 
 # Patina must remain at the end of this file.
+#
+# Not cached via `znap eval` on purpose: `activate` has a side effect — it
+# starts the highlighter daemon if it is not already running. A cached copy of
+# the script only starts the daemon when the cache is regenerated, so after a
+# reboot (or a daemon crash) the socket is gone and highlighting silently does
+# nothing. Running it every time costs ~20ms via the mise shim.
 if (( $+commands[zsh-patina] )); then
-    znap eval zsh-patina 'zsh-patina activate'
+    eval "$(zsh-patina activate)"
 fi
