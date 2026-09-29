@@ -1,4 +1,7 @@
 {
+  "cursor_animation": {
+    "enabled": false
+  },
   "language_models": {
     "ollama": {
       "api_url": "https://ollama.com",
@@ -79,6 +82,13 @@
   "auto_signature_help": true,
   "redact_private_values": false,
   "agent": {
+    "sandbox_permissions": {
+      "network_hosts": [
+        "docs.goauthentik.io",
+        "goauthentik.io",
+        "raw.githubusercontent.com"
+      ]
+    },
     "show_turn_stats": true,
     "dock": "left",
     "tool_permissions": {
@@ -94,47 +104,13 @@
     "expand_terminal_card": true,
     "model_parameters": [],
     "default_model": {
-      "provider": "Mimir",
-      "model": "Qwen/Qwen3.5-392B-A17B-TEE",
+      "effort": "medium",
+      "enable_thinking": true,
+      "provider": "openai-subscribed",
+      "model": "gpt-6-astra",
     },
   },
   "agent_servers": {
-    "Mimir": {
-      "favorite_config_option_values": {
-        "model": [
-          "ollama-cloud/glm-5.1",
-          "ollama-cloud/minimax-m3",
-          "ollama-cloud/kimi-k2.7-code",
-        ],
-      },
-      "default_config_options": {
-        "model": "ollama-cloud/glm-5.1",
-      },
-      "type": "custom",
-      "command": "bun",
-      "args": ["run", "/Users/rageltd/Projects/mimir/packages/acp/index.ts"],
-      "env": {
-        "MIMIR_SERVER_URL": "http://mimir.conhost.lan",
-      },
-    },
-    "Mimir Codex": {
-      "default_config_options": {
-        "fast-mode": false,
-        "reasoning_effort": "xhigh"
-      },
-      "favorite_config_option_values": {
-        "model": [
-          "gpt-5.6-sol"
-        ],
-        "reasoning_effort": [
-          "xhigh"
-        ]
-      },
-      "type": "custom",
-      "command": "mimir-codex-acp",
-      "args": [],
-      "env": {},
-    },
     "codex-acp": {
       "default_config_options": {
         "reasoning_effort": "high"
@@ -154,6 +130,10 @@
   },
   "format_on_save": "on",
   "context_servers": {
+    "Rage's MCP Servers": {
+      "enabled": true,
+      "url": "https://mcp.rageltd.ca/mcp"
+    },
     "mcp-server-context7": {
       "enabled": true,
       "remote": false,

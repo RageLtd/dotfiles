@@ -1,27 +1,17 @@
 # .zshrc - Interactive shell configuration
 
 # =============================================================================
-# Powerlevel10k instant prompt
-# =============================================================================
-# Must be the first thing in this file. Paints a cached prompt immediately so
-# nothing below blocks first input. Anything after this line that writes to
-# the terminal (echo, warnings, prompts for input) will disable it and tell
-# you which line did it.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# =============================================================================
 # PATH Configuration (consolidated)
 # =============================================================================
 typeset -U PATH  # Deduplicate PATH entries
 
-# User paths. Toolchains (bun, node, rust, go, erlang/elixir) are on PATH via
-# mise below, not here. ~/.cargo/bin stays for `cargo install`ed binaries
-# not managed through mise's cargo: backend.
+# User paths. Toolchains come from brew (see Brewfile). ~/.cargo/bin, ~/go/bin
+# and ~/.bun/bin hold `cargo install` / `go install` / `bun i -g` binaries.
 path=(
     $HOME/.local/bin
     $HOME/.cargo/bin
+    $HOME/go/bin
+    $HOME/.bun/bin
     $HOME/.opencode/bin
     $HOME/bin
     $path
@@ -44,6 +34,9 @@ elif [[ -x "/usr/local/bin/brew" ]]; then
     znap eval brew '/usr/local/bin/brew shellenv'
 fi
 
+# brew's rustup is keg-only; its proxies (cargo, rustc, …) live under opt.
+[[ -n "$HOMEBREW_PREFIX" ]] && path=($HOMEBREW_PREFIX/opt/rustup/bin $path)
+
 znap source mattmc3/zephyr plugins/{color,completion,directory,editor,environment,history,utility}
 znap source zsh-users/zsh-completions
 znap source zsh-users/zsh-autosuggestions
@@ -60,19 +53,10 @@ zle-keymap-select() {
 }
 
 # =============================================================================
-# Tool Initialization (only if installed)
-# =============================================================================
-
-# mise: toolchain versions, per-directory env (replaces direnv), tasks.
-# Shell activation rewrites PATH on cd to the real binaries — no shims.
-# Global config: ~/.config/mise/config.toml; per-project: mise.toml.
-if (( $+commands[mise] )); then
-    eval "$(mise activate zsh)"
-fi
-
-# =============================================================================
 # Environment Variables
 # =============================================================================
+export APOLLO_TELEMETRY_DISABLED=true
+
 # 1Password SSH agent (Linux socket first, then macOS)
 if [[ -S "$HOME/.1password/agent.sock" ]]; then
     export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
@@ -85,10 +69,15 @@ fi
 # Prompt
 # ==============================================================================
 
-# Powerlevel10k. znap clones it into ~/.znap/repos on first run; gitstatusd
-# is fetched by p10k itself on first prompt. Segment config lives in ~/.p10k.zsh.
-znap source romkatv/powerlevel10k
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+# myship: starship rendered by a per-user daemon, painted asynchronously so the
+# shell never waits on it (built from ~/Projects/myship, symlinked into
+# ~/.local/bin). Config is the usual ~/.config/starship.toml. Falls back to
+# stock starship on machines without a myship build.
+if (( $+commands[myship] )); then
+    eval "$(myship init zsh)"
+elif (( $+commands[starship] )); then
+    eval "$(starship init zsh)"
+fi
 
 # ==============================================================================
 # Syntax Highlighting
@@ -100,7 +89,7 @@ znap source romkatv/powerlevel10k
 # starts the highlighter daemon if it is not already running. A cached copy of
 # the script only starts the daemon when the cache is regenerated, so after a
 # reboot (or a daemon crash) the socket is gone and highlighting silently does
-# nothing. Running it every time costs ~20ms via the mise shim.
+# nothing. Running it every time costs ~20ms.
 if (( $+commands[zsh-patina] )); then
     eval "$(zsh-patina activate)"
 fi
