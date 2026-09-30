@@ -1,4 +1,4 @@
-# Brewfile — the whole toolchain, one package manager, macOS and Linux (linuxbrew).
+# Brewfile — the shared toolchain, macOS and Linux (linuxbrew).
 #
 #   brew bundle --file ~/dotfiles/Brewfile            # install everything listed
 #   brew bundle check --file ~/dotfiles/Brewfile      # what's missing
@@ -76,7 +76,7 @@ brew "ffmpeg"
 # macOS only — casks, fonts, and formulae with no Linux build
 # =============================================================================
 if OS.mac?
-  cask "1password-cli"    # op — Linux boxes use 1Password SSH agent forwarding instead
+  cask "1password-cli"    # op — setup.sh installs the native Linux package
 
   cask "1password"
   cask "codex"

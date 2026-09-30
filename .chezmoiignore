@@ -2,7 +2,7 @@ README.md
 LICENSE
 setup.sh
 Brewfile
+tests
 
 # Runtime data that must never be deployed from the repo
 .config/zed/prompts
-
