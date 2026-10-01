@@ -73,25 +73,23 @@ install_paru() (
         return 1
     fi
 
-    if ! pacman -Q paru-bin &>/dev/null; then
-        local build_dir reply
+    if ! pacman -Q paru &>/dev/null; then
+        local build_dir
         build_dir=$(mktemp -d)
         trap 'rm -rf "$build_dir"' EXIT
 
-        git clone --depth 1 -- https://aur.archlinux.org/paru-bin.git "$build_dir/paru-bin"
-        git --no-pager -C "$build_dir/paru-bin" show HEAD:PKGBUILD
-        echo "Review the build files in $build_dir/paru-bin before continuing."
-        read -r -p "Build and install paru-bin? [y/N] " reply
-        case "$reply" in
-            y|Y|yes|YES) ;;
-            *) red "paru-bin installation cancelled"; return 1 ;;
-        esac
+        # paru's makedepends is the virtual `cargo`; install rustup explicitly so
+        # makepkg -s --noconfirm doesn't pick the `rust` provider instead.
+        # Arch's rustup ships without a toolchain, so pull stable before building.
+        sudo pacman -S --needed --noconfirm rustup
+        rustup default stable
 
-        cd "$build_dir/paru-bin"
-        makepkg -si
+        git clone --depth 1 -- https://aur.archlinux.org/paru.git "$build_dir/paru"
+        cd "$build_dir/paru"
+        makepkg -si --noconfirm
     fi
 
-    # An installed paru-bin can still be incompatible with the current libalpm.
+    # An installed paru can still be incompatible with the current libalpm.
     paru --version
 )
 

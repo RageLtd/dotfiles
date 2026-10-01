@@ -16,7 +16,7 @@ brew "zsh-patina"
 # --- Language toolchains -----------------------------------------------------
 brew "bun"
 brew "node"
-brew "rustup"           # keg-only: $HOMEBREW_PREFIX/opt/rustup/bin is on PATH in each shell rc
+brew "rustup" if OS.mac? # keg-only: $HOMEBREW_PREFIX/opt/rustup/bin is on PATH in each shell rc; Arch gets rustup from pacman in setup.sh
 brew "rust-analyzer"
 brew "go"
 brew "erlang"

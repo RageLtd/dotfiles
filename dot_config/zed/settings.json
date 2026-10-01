@@ -1,6 +1,6 @@
 {
   "cursor_animation": {
-    "enabled": false
+    "enabled": false,
   },
   "language_models": {
     "ollama": {
@@ -28,33 +28,25 @@
       "args": [],
       "projects": [
         {
-          "paths": [
-            "/home/rageltd/mimir"
-          ]
+          "paths": ["/home/rageltd/mimir"],
         },
         {
-          "paths": [
-            "/home/rageltd/projects/docker-zulip"
-          ]
-        }
-      ]
+          "paths": ["/home/rageltd/projects/docker-zulip"],
+        },
+      ],
     },
     {
       "host": "spark.lan",
       "args": [],
       "projects": [
         {
-          "paths": [
-            "/home/rageltd/projects/minstrel"
-          ]
+          "paths": ["/home/rageltd/projects/minstrel"],
         },
         {
-          "paths": [
-            "/home/rageltd/unsloth/gemma-4-search"
-          ]
-        }
-      ]
-    }
+          "paths": ["/home/rageltd/unsloth/gemma-4-search"],
+        },
+      ],
+    },
   ],
   "agent_buffer_font_size": 14.0,
   "agent_ui_font_size": 16.0,
@@ -82,12 +74,13 @@
   "auto_signature_help": true,
   "redact_private_values": false,
   "agent": {
+    "enable_feedback": false,
     "sandbox_permissions": {
       "network_hosts": [
         "docs.goauthentik.io",
         "goauthentik.io",
-        "raw.githubusercontent.com"
-      ]
+        "raw.githubusercontent.com",
+      ],
     },
     "show_turn_stats": true,
     "dock": "left",
@@ -101,7 +94,7 @@
     },
     "default_profile": "write",
     "expand_edit_card": true,
-    "expand_terminal_card": true,
+    "expand_terminal_card": false,
     "model_parameters": [],
     "default_model": {
       "effort": "medium",
@@ -111,35 +104,18 @@
     },
   },
   "agent_servers": {
-    "codex-acp": {
-      "default_config_options": {
-        "reasoning_effort": "high"
-      },
-      "type": "registry",
-    },
     "claude-acp": {
-      "type": "registry",
-    },
-    "opencode": {
       "default_config_options": {
-        "effort": "high",
-        "model": "openai/gpt-5.6-sol"
+        "effort": "default"
       },
-      "type": "registry",
-    },
+      "type": "registry"
+    }
   },
   "format_on_save": "on",
   "context_servers": {
     "Rage's MCP Servers": {
       "enabled": true,
-      "url": "https://mcp.rageltd.ca/mcp"
-    },
-    "mcp-server-context7": {
-      "enabled": true,
-      "remote": false,
-      "settings": {
-        "context7_api_key": "ctx7sk-34950dc9-ea28-4a7b-9f81-c1474e07e921",
-      },
+      "url": "https://mcp.rageltd.ca/mcp",
     },
     "cartographer": {
       "enabled": false,
@@ -161,8 +137,8 @@
   "theme": "Bearded Theme Monokai Black",
   "base_keymap": "VSCode",
   "terminal": {
-    "toolbar": {
-      "breadcrumbs": false,
+    "env": {
+      "GIT_EDITOR": "zed --wait",
     },
     "dock": "bottom",
     "font_size": 14.0,

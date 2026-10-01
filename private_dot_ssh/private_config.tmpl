@@ -2,13 +2,17 @@
 {{- if eq .chezmoi.os "darwin" -}}
 {{- $agentSock = printf "%s/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" .chezmoi.homeDir -}}
 {{- end -}}
-# Forward the 1Password agent only to trusted networks: tailnet hosts
-# (MagicDNS FQDNs) and LAN addresses. The explicit socket path means
-# forwarding works even when SSH_AUTH_SOCK isn't set.
+# Forward the agent only to trusted networks: tailnet hosts (MagicDNS FQDNs)
+# and LAN addresses. `yes` forwards the IdentityAgent socket when one is
+# pinned below, otherwise whatever SSH_AUTH_SOCK points at — so a headless
+# host can pass an already-forwarded agent along to the next hop.
 # Note: 172.16/12 is deliberately omitted — it can't be globbed without
 # also matching public 172.x addresses.
 Host *.ts.net *.local *.lan 192.168.*.* 10.*.*.*
-	ForwardAgent "{{ $agentSock }}"
+	ForwardAgent yes
 
-Host *
+# Pin the 1Password agent only where it actually exists. IdentityAgent
+# overrides SSH_AUTH_SOCK, so setting it unconditionally on a headless host
+# (conhost) hides the forwarded agent and breaks git@github.com from there.
+Match exec "test -S '{{ $agentSock }}'"
 	IdentityAgent "{{ $agentSock }}"
