@@ -2,6 +2,15 @@
 {{- if eq .chezmoi.os "darwin" -}}
 {{- $agentSock = printf "%s/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" .chezmoi.homeDir -}}
 {{- end -}}
+# Inside an SSH session (this machine reached from another) that brought a
+# forwarded agent along, use that agent instead of the local 1Password one: the
+# local agent needs a GUI approval that a headless login can never give ("agent
+# refused operation"), and anything built on ssh — docker contexts included —
+# just hangs on it. Without a forwarded socket, fall through to the rules below.
+# Must come first: ssh keeps the first value it obtains for each option.
+Match exec "test -n \"$SSH_CONNECTION\" -a -S \"$SSH_AUTH_SOCK\""
+	IdentityAgent SSH_AUTH_SOCK
+
 # Forward the agent only to trusted networks: tailnet hosts (MagicDNS FQDNs)
 # and LAN addresses. `yes` forwards the IdentityAgent socket when one is
 # pinned below, otherwise whatever SSH_AUTH_SOCK points at — so a headless
