@@ -56,6 +56,7 @@ zle-keymap-select() {
 # Environment Variables
 # =============================================================================
 export APOLLO_TELEMETRY_DISABLED=true
+export COLORTERM=truecolor
 
 # 1Password SSH agent (Linux socket first, then macOS). Inside an SSH session
 # that forwarded an agent, keep that one: the local 1Password agent needs a GUI
